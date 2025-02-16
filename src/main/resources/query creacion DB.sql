@@ -115,14 +115,7 @@ CREATE TABLE LineasFacturasClientes (
     codigo VARCHAR(40) NOT NULL,
     pvp DECIMAL(10,2) NOT NULL,
     iva_id INT,
-    proveedor_id INT NOT NULL,
     FOREIGN KEY (factura_id) REFERENCES FacturasClientes(id),
     FOREIGN KEY (articulo_id) REFERENCES Articulos(id),
     FOREIGN KEY (iva_id) REFERENCES TiposIVA(id)
 );
-
-
-
-
-
-
