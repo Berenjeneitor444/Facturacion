@@ -8,8 +8,5 @@
         <property name="hibernate.connection.password">hibernate1</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
         <property name="hibernate.show_sql">true</property>
-        <mapping class="com.berenjeneitor.facturacion.model.Cliente"/>
-        <mapping class="com.berenjeneitor.facturacion.model.Factura"/>
-        <mapping class="com.berenjeneitor.facturacion.model.Producto"/>
     </session-factory>
 </hibernate-configuration>

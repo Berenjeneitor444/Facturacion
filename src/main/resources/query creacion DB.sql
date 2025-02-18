@@ -36,8 +36,8 @@ CREATE TABLE Proveedores (
     observaciones TEXT
 );
 
--- Tabla: Familias
-CREATE TABLE Familias (
+-- Tabla: FamiliaArticulos
+CREATE TABLE FamiliaArticulos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(40) NOT NULL UNIQUE,
     denominacion VARCHAR(80) NOT NULL UNIQUE
@@ -55,7 +55,7 @@ CREATE TABLE Articulos (
     proveedor_id INT,
     stock DECIMAL(10,2),
     observaciones TEXT,
-    FOREIGN KEY (familia_id) REFERENCES Familias(id),
+    FOREIGN KEY (familia_id) REFERENCES FamiliaArticulos(id),
     FOREIGN KEY (proveedor_id) REFERENCES Proveedores(id)
 );
 
