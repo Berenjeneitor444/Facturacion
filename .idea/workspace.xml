@@ -4,23 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ce3d111-d901-45ca-a953-9e4b299b1f33" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jpa.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/GenericDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/conexion/HibernateUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Articulos.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FacturasClientes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FamiliaArticulos.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FormaPago.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/LineasFacturasClientes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Proveedores.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/RectificativasClientes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/TiposIVA.java" afterDir="false" />
+    <list default="true" id="6ce3d111-d901-45ca-a953-9e4b299b1f33" name="Changes" comment="odio">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/implementaciones/GenericDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/interfaces/GenericDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/ConexionDB.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Clientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Clientes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/query creacion DB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/query creacion DB.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/GenericDAO.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,27 +19,11 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
-        <option value="Interface" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;Berenjeneitor444&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Berenjeneitor444/Facturacion.git&quot;,
-    &quot;accountId&quot;: &quot;49dd43da-078e-4ccc-9e5f-85d9eb29b4d1&quot;
-  }
-}</component>
-  <component name="JpbToolWindowState">
-    <option name="isToolWindowVisible" value="false" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
@@ -64,19 +36,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -87,8 +57,5 @@
       <updated>1739551703842</updated>
     </task>
     <servers />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
 </project>
