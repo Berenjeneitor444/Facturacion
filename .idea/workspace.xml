@@ -4,11 +4,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ce3d111-d901-45ca-a953-9e4b299b1f33" name="Changes" comment="odio">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/implementaciones/GenericDAOImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/interfaces/GenericDAO.java" afterDir="false" />
+    <list default="true" id="6ce3d111-d901-45ca-a953-9e4b299b1f33" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/Business.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/ArticulosDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/ClientesDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/FacturasClientesDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/FamiliaArticulosDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/FormaPagoDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/LineasFacturasClientesDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/LineasRectificativasClientesDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/ProveedoresDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/RectificativasClientesDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/TiposIVADAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/implementaciones/generic/GenericDAOImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/ArticulosDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/ClientesDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/FacturasClientesDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/FamiliaArticulosDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/FormaPagoDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/LineasFacturasClientesDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/LineasRectificativasClientesDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/ProveedoresDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/RectificativasClientesDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/TiposIVADAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/DAOs/interfaces/generic/GenericDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/LineasRectificativa.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/MainMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jpa.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jpa.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/GenericDAO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/Facturacion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/Facturacion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/implementaciones/GenericDAOImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/DAOs/interfaces/GenericDAO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/conexion/HibernateUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/conexion/HibernateUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Articulos.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/Articulos.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Clientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/Clientes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FacturasClientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/FacturasClientes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FamiliaArticulos.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/FamiliaArticulos.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/FormaPago.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/FormaPago.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/LineasFacturasClientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/LineasFacturasClientes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/Proveedores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/Proveedores.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/RectificativasClientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/RectificativasClientes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/modelo/DB/entidades/TiposIVA.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/persistencia/entidades/TiposIVA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/query creacion DB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/query creacion DB.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,12 +55,28 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Berenjeneitor444&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Berenjeneitor444/Facturacion.git&quot;,
+    &quot;accountId&quot;: &quot;49dd43da-078e-4ccc-9e5f-85d9eb29b4d1&quot;
+  }
+}</component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
@@ -32,21 +85,37 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2t2YaXlcVBFhPX4ExA6FsD221mE" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Facturacion.executor": "Run",
+    "Application.app.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "com.github.copilot.settings.ApplicationConfigurable"
   }
-}</component>
+}]]></component>
+  <component name="RunManager">
+    <configuration name="app" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.berenjeneitor.facturacion.Facturacion" />
+      <module name="Facturacion" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -57,5 +126,19 @@
       <updated>1739551703842</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
 </project>

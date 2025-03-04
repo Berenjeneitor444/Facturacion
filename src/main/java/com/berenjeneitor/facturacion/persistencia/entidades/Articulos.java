@@ -1,4 +1,4 @@
-package com.berenjeneitor.facturacion.modelo.DB.entidades;
+package com.berenjeneitor.facturacion.persistencia.entidades;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +16,7 @@ public class Articulos implements Serializable {
     @Column(length = 40, nullable = false, unique = true)
     private String codigo;
 
-    @Column(length = 80)
+    @Column(name = "codigo_barras", length = 80)
     private String codigoBarras;
 
     @Column(length = 60)
@@ -26,27 +26,36 @@ public class Articulos implements Serializable {
     @JoinColumn(name = "familia_id")
     private FamiliaArticulos familia;
 
+    @ManyToOne
+    @JoinColumn(name = "iva_id", nullable = false)
+    private TiposIVA tipoIVA;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal coste;
 
+    @Column(precision = 5, scale = 2)
     private BigDecimal margen;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal pvp;
 
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
     private Proveedores proveedor;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal stock;
-
-    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL)
-    private List<LineasFacturasClientes> lineasFactura;
 
     @Lob
     private String observaciones;
 
+    @OneToMany(mappedBy = "articulo", cascade = CascadeType.ALL)
+    private List<LineasFacturasClientes> lineasFactura;
+
     public Articulos() {
     }
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -85,6 +94,14 @@ public class Articulos implements Serializable {
 
     public void setFamilia(FamiliaArticulos familia) {
         this.familia = familia;
+    }
+
+    public TiposIVA getTipoIVA() {
+        return tipoIVA;
+    }
+
+    public void setTipoIVA(TiposIVA tipoIVA) {
+        this.tipoIVA = tipoIVA;
     }
 
     public BigDecimal getCoste() {

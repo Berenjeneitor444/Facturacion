@@ -1,4 +1,4 @@
-package com.berenjeneitor.facturacion.modelo.DB.conexion;
+package com.berenjeneitor.facturacion.persistencia.conexion;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;

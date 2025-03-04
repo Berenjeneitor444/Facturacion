@@ -1,7 +1,6 @@
-package com.berenjeneitor.facturacion.modelo.DB.entidades;
+package com.berenjeneitor.facturacion.persistencia.entidades;
 import javax.persistence.*;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.List;
 

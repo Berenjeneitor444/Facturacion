@@ -39,22 +39,24 @@ CREATE TABLE Proveedores (
 -- Tabla: FamiliaArticulos
 CREATE TABLE FamiliaArticulos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(40) NOT NULL UNIQUE,
+    codigo VARCHAR(40) NOT NULL UNIQUE, -- generar automaticamente
     denominacion VARCHAR(80) NOT NULL UNIQUE
 );
 -- Tabla: Articulos
 CREATE TABLE Articulos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    codigo VARCHAR(40) NOT NULL UNIQUE,
-    codigo_barras VARCHAR(80),
+    codigo VARCHAR(40) NOT NULL UNIQUE, -- generar automaticamente
+    codigo_barras VARCHAR(80), -- ignorar esto, no soy un supermercado
     descripcion VARCHAR(60),
     familia_id INT,
+    iva_id INT NOT NULL,
     coste DECIMAL(10,2),
     margen DECIMAL(5,2),
     pvp DECIMAL(10,2),
     proveedor_id INT,
     stock DECIMAL(10,2),
     observaciones TEXT,
+    FOREIGN KEY (iva_id) REFERENCES TiposIva(id),
     FOREIGN KEY (familia_id) REFERENCES FamiliaArticulos(id),
     FOREIGN KEY (proveedor_id) REFERENCES Proveedores(id)
 );
@@ -73,13 +75,13 @@ CREATE TABLE FacturasClientes (
     fecha DATE NOT NULL,
     cliente_id INT NOT NULL,
     base_imponible DECIMAL(10,2) NOT NULL,
-    iva DECIMAL(5,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     hash VARCHAR(128),
     qr VARCHAR(4296),
     cobrada BOOLEAN NOT NULL,
-    forma_pago_id INT NOT NULL,
-    fecha_cobro DATE NOT NULL,
+    forma_pago_id INT,
+    fecha_cobro DATE,
     observaciones TEXT,
     FOREIGN KEY (cliente_id) REFERENCES Clientes(id),
     FOREIGN KEY (forma_pago_id) REFERENCES FormaPago(id)
@@ -92,13 +94,13 @@ CREATE TABLE RectificativasClientes (
     fecha DATE NOT NULL,
     cliente_id INT NOT NULL,
     base_imponible DECIMAL(10,2) NOT NULL,
-    iva DECIMAL(5,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL,
     total DECIMAL(10,2) NOT NULL,
-    hash VARCHAR(128),
-    qr VARCHAR(4296),
     observaciones TEXT,
-    FOREIGN KEY (cliente_id) REFERENCES Clientes(id)
+    FOREIGN KEY (cliente_id) REFERENCES Clientes(id),
+    FOREIGN KEY (iva_id) REFERENCES TiposIva(id)
 );
+
 -- Tabla: TiposIVA
 CREATE TABLE TiposIVA (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,11 +113,29 @@ CREATE TABLE LineasFacturasClientes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     factura_id INT NOT NULL,
     articulo_id INT NOT NULL,
-    descripcion VARCHAR(80) NOT NULL,
-    codigo VARCHAR(40) NOT NULL,
-    pvp DECIMAL(10,2) NOT NULL,
-    iva_id INT,
+    cantidad DECIMAL(10,2) NOT NULL,
+    descripcion VARCHAR(80),
+    codigo VARCHAR(50) NOT NULL, -- se refiere al codigo del articulo
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL,
+    base_imponible DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (factura_id) REFERENCES FacturasClientes(id),
-    FOREIGN KEY (articulo_id) REFERENCES Articulos(id),
-    FOREIGN KEY (iva_id) REFERENCES TiposIVA(id)
+    FOREIGN KEY (articulo_id) REFERENCES Articulos(id)
+);
+
+-- Tabla: LineasRectificativasClientes
+CREATE TABLE LineasRectificativa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    rectificativa_id INT NOT NULL,
+    articulo_id INT NOT NULL,
+    cantidad DECIMAL(10,2) NOT NULL,
+    descripcion VARCHAR(80),
+    codigo VARCHAR(50) NOT NULL, -- se refiere al codigo del articulo
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    base_imponible DECIMAL(10,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (rectificativa_id) REFERENCES RectificativasClientes(id),
+    FOREIGN KEY (articulo_id) REFERENCES Articulos(id)
 );

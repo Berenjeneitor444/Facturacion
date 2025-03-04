@@ -1,4 +1,4 @@
-package com.berenjeneitor.facturacion.modelo.DB.entidades;
+package com.berenjeneitor.facturacion.persistencia.entidades;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package com.berenjeneitor.facturacion.modelo.DB.entidades;
+package com.berenjeneitor.facturacion.persistencia.entidades;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +15,7 @@ public class FormaPago implements Serializable {
     private String tipo;
 
 
-    @OneToMany(mappedBy = "formaPago", cascade = CascadeType.ALL) // Relación con FacturasClientes, mapeado en el campo 'formaPago' de FacturaCliente
+    @OneToMany(mappedBy = "formaPago", cascade = CascadeType.ALL)
     private List<FacturasClientes> facturas;
 
     @Lob

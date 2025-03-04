@@ -1,13 +1,14 @@
-package com.berenjeneitor.facturacion.modelo.DB.entidades;
+package com.berenjeneitor.facturacion.persistencia.entidades;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "RectificativasClientes")
-public class RectificativasClientes implements Serializable {
+@Table(name = "FacturasClientes")
+public class FacturasClientes implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +24,13 @@ public class RectificativasClientes implements Serializable {
     @JoinColumn(name = "cliente_id", nullable = false)
     private Clientes cliente;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal baseImponible;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal iva;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
     @Column(length = 128)
@@ -38,12 +39,26 @@ public class RectificativasClientes implements Serializable {
     @Column(length = 4296)
     private String qr;
 
+    @Column(nullable = false)
+    private Boolean cobrada;
+
+    @ManyToOne
+    @JoinColumn(name = "forma_pago_id")
+    private FormaPago formaPago;
+
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL)
+    private List<LineasFacturasClientes> lineasFactura;
+
+    @Column(name = "fecha_cobro")
+    private Date fechaCobro;
+
     @Lob
     private String observaciones;
 
-    public RectificativasClientes() {
+    public FacturasClientes() {
     }
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
@@ -116,6 +131,30 @@ public class RectificativasClientes implements Serializable {
         this.qr = qr;
     }
 
+    public Boolean getCobrada() {
+        return cobrada;
+    }
+
+    public void setCobrada(Boolean cobrada) {
+        this.cobrada = cobrada;
+    }
+
+    public FormaPago getFormaPago() {
+        return formaPago;
+    }
+
+    public void setFormaPago(FormaPago formaPago) {
+        this.formaPago = formaPago;
+    }
+
+    public Date getFechaCobro() {
+        return fechaCobro;
+    }
+
+    public void setFechaCobro(Date fechaCobro) {
+        this.fechaCobro = fechaCobro;
+    }
+
     public String getObservaciones() {
         return observaciones;
     }
@@ -123,5 +162,12 @@ public class RectificativasClientes implements Serializable {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-}
 
+    public List<LineasFacturasClientes> getLineasFactura() {
+        return lineasFactura;
+    }
+
+    public void setLineasFactura(List<LineasFacturasClientes> lineasFactura) {
+        this.lineasFactura = lineasFactura;
+    }
+}
