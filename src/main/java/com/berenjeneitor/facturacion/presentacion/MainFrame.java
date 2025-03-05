@@ -4,42 +4,139 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
-    private CardLayout cardLayout;
-    private JPanel mainPanel;
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel;
+    private final JPanel statusBar;
+    
+    // Services
+    private final ArticulosService articulosService;
+    private final ClientesService clientesService;
+    private final ProveedoresService proveedoresService;
+    private final FamiliaArticulosService familiaArticulosService;
+    private final TiposIVAService tiposIVAService;
+    private final FormaPagoService formaPagoService;
+    private final FacturasService facturasService;
 
-    public MainFrame() {
-        setTitle("Facturación");
-        setSize(800, 600);
+    public MainFrame(ArticulosService articulosService,
+                   ClientesService clientesService,
+                   ProveedoresService proveedoresService,
+                   FamiliaArticulosService familiaArticulosService,
+                   TiposIVAService tiposIVAService,
+                   FormaPagoService formaPagoService,
+                   FacturasService facturasService) {
+        setTitle("Sistema de Facturación");
+        setSize(1024, 768);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
+        // Initialize services
+        this.articulosService = articulosService;
+        this.clientesService = clientesService;
+        this.proveedoresService = proveedoresService;
+        this.familiaArticulosService = familiaArticulosService;
+        this.tiposIVAService = tiposIVAService;
+        this.formaPagoService = formaPagoService;
+        this.facturasService = facturasService;
+
+        // Initialize layouts
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+        statusBar = new JPanel(new BorderLayout());
+        
+        // Setup status bar
+        setupStatusBar();
 
-        // Agregar los diferentes formularios al mainPanel
-        mainPanel.add(new FormularioClientes(), "Clientes");
-        mainPanel.add(new FormularioArticulos(), "Articulos");
-        mainPanel.add(new FormularioFormasPago(), "FormasPago");
-        mainPanel.add(new FormularioTiposIVA(), "TiposIVA");
-        mainPanel.add(new FormularioFamiliaArticulos(), "FamiliaArticulos");
-        mainPanel.add(new FormularioProveedores(), "Proveedores");
-        mainPanel.add(new FormularioCrearFactura(), "CrearFactura");
-        mainPanel.add(new FormularioVerFacturas(), "VerFacturas");
-        mainPanel.add(new FormularioCrearRectificativa(), "CrearRectificativa");
-        mainPanel.add(new FormularioVerRectificativas(), "VerRectificativas");
-        mainPanel.add(new ListadoClientes(), "ListadoClientes");
-        mainPanel.add(new ListadoArticulos(), "ListadoArticulos");
-        mainPanel.add(new ListadoFormasPago(), "ListadoFormasPago");
-        mainPanel.add(new ListadoTiposIVA(), "ListadoTiposIVA");
-        mainPanel.add(new ListadoFamiliasArticulos(), "ListadoFamiliasArticulos");
-        mainPanel.add(new ListadoProveedores(), "ListadoProveedores");
-        mainPanel.add(new FormularioConfigurarEmpresa(), "ConfigurarEmpresa");
-        mainPanel.add(new ManualUsuario(), "ManualUsuario");
-        mainPanel.add(new AcercaDe(), "AcercaDe");
+        // Add components
+        initializeComponents();
 
-        add(mainPanel, BorderLayout.CENTER);
+        // Setup menu
         setJMenuBar(new MyMenuBar(this));
 
-        setVisible(true);
+        // Layout
+        add(mainPanel, BorderLayout.CENTER);
+        add(statusBar, BorderLayout.SOUTH);
+    }
+
+    private void setupStatusBar() {
+        statusBar.setBorder(BorderFactory.createEtchedBorder());
+        JLabel statusLabel = new JLabel(" Listo");
+        statusBar.add(statusLabel, BorderLayout.WEST);
+    }
+
+    private void initializeComponents() {
+        // Add home panel
+        mainPanel.add(new Home(), "home");
+
+        // Add forms
+        mainPanel.add(new FormularioClientes(), "Clientes");
+        mainPanel.add(new FormularioProveedores(proveedoresService), "Proveedores");
+        mainPanel.add(new FormularioArticulos(articulosService, familiaArticulosService, tiposIVAService), "Articulos");
+        mainPanel.add(new FormularioFormasPago(formaPagoService), "FormasPago");
+        mainPanel.add(new FormulariosTiposIva(tiposIVAService), "TiposIVA");
+        mainPanel.add(new FormularioFamiliaArticulos(familiaArticulosService), "FamiliaArticulos");
+        mainPanel.add(new FormularioFacturas(facturasService, clientesService, articulosService), "CrearFactura");
+
+        // Add listados
+        mainPanel.add(new ListadoClientes(clientesService, this), "ListadoClientes");
+        mainPanel.add(new ListadoArticulos(articulosService, this), "ListadoArticulos");
+        mainPanel.add(new ListadoProveedores(proveedoresService, this), "ListadoProveedores");
+        mainPanel.add(new ListadoFacturas(facturasService, this), "ListadoFacturas");
+        mainPanel.add(new ListadoFormasPago(formaPagoService, this), "ListadoFormasPago");
+        mainPanel.add(new ListadoTiposIVA(tiposIVAService, this), "ListadoTiposIVA");
+        mainPanel.add(new ListadoFamiliasArticulos(familiaArticulosService, this), "ListadoFamiliasArticulos");
+        mainPanel.add(new ListadoRectificativas(facturasService, this), "ListadoRectificativas");
+
+        // Add configuration
+        mainPanel.add(new ConfiguracionEmpresa(), "ConfiguracionEmpresa");
+    }
+
+    private JMenuBar createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        // Archivo menu
+        JMenu menuArchivo = new JMenu("Archivo");
+        menuArchivo.add(new JMenuItem("Configuración"));
+        menuArchivo.addSeparator();
+        menuArchivo.add(new JMenuItem("Salir"));
+
+        // Maestros menu
+        JMenu menuMaestros = new JMenu("Maestros");
+        menuMaestros.add(createMenuItem("Clientes", "Clientes"));
+        menuMaestros.add(createMenuItem("Proveedores", "Proveedores"));
+        menuMaestros.add(createMenuItem("Artículos", "Articulos"));
+        menuMaestros.add(createMenuItem("Familias", "Familias"));
+        menuMaestros.add(createMenuItem("Formas de Pago", "FormasPago"));
+
+        // Facturas menu
+        JMenu menuFacturas = new JMenu("Facturas");
+        menuFacturas.add(new JMenuItem("Nueva Factura"));
+        menuFacturas.add(new JMenuItem("Consultar Facturas"));
+        menuFacturas.add(new JMenuItem("Rectificativas"));
+
+        // Informes menu
+        JMenu menuInformes = new JMenu("Informes");
+        menuInformes.add(new JMenuItem("Ventas por Cliente"));
+        menuInformes.add(new JMenuItem("Ventas por Artículo"));
+        menuInformes.add(new JMenuItem("Balance Mensual"));
+
+        // Ayuda menu
+        JMenu menuAyuda = new JMenu("Ayuda");
+        menuAyuda.add(new JMenuItem("Manual de Usuario"));
+        menuAyuda.add(new JMenuItem("Acerca de"));
+
+        menuBar.add(menuArchivo);
+        menuBar.add(menuMaestros);
+        menuBar.add(menuFacturas);
+        menuBar.add(menuInformes);
+        menuBar.add(menuAyuda);
+
+        return menuBar;
+    }
+
+    private JMenuItem createMenuItem(String text, String cardName) {
+        JMenuItem menuItem = new JMenuItem(text);
+        menuItem.addActionListener(e -> showCard(cardName));
+        return menuItem;
     }
 
     public void showCard(String cardName) {
@@ -47,6 +144,15 @@ public class MainFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        new MainFrame();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame();
+            frame.setVisible(true);
+        });
     }
 }

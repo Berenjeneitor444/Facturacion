@@ -140,10 +140,67 @@ public class MyMenuBar extends JMenuBar implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem) e.getSource();
-        if(source == clientes){
-            // redirigir a clientes
-            new FormularioClientes().setVisible(true);
-            ((JFrame)this.getParent()).dispose();
+        
+        // Fichas
+        if (source == clientes) {
+            father.showCard("Clientes");
+        } else if (source == articulos) {
+            father.showCard("Articulos");
+        } else if (source == formasPago) {
+            father.showCard("FormasPago");
+        } else if (source == tiposIVA) {
+            father.showCard("TiposIVA");
+        } else if (source == familiaArticulos) {
+            father.showCard("FamiliaArticulos");
+        } else if (source == proveedores) {
+            father.showCard("Proveedores");
+        }
+        
+        // Facturas
+        else if (source == crearFactura) {
+            father.showCard("CrearFactura");
+        } else if (source == verFacturas) {
+            father.showCard("ListadoFacturas");
+        }
+        
+        // Rectificativas
+        else if (source == crearRectificativa) {
+            father.showCard("CrearRectificativa");
+        } else if (source == verRectificativas) {
+            father.showCard("ListadoRectificativas");
+        }
+        
+        // Listados
+        else if (source == listadoClientes) {
+            father.showCard("ListadoClientes");
+        } else if (source == listadoArticulos) {
+            father.showCard("ListadoArticulos");
+        } else if (source == listadoFormasPago) {
+            father.showCard("ListadoFormasPago");
+        } else if (source == listadoTiposIVA) {
+            father.showCard("ListadoTiposIVA");
+        } else if (source == listadoFamiliasArticulos) {
+            father.showCard("ListadoFamiliasArticulos");
+        } else if (source == listadoProveedores) {
+            father.showCard("ListadoProveedores");
+        }
+        
+        // Configuración
+        else if (source == configurarEmpresa) {
+            father.showCard("ConfiguracionEmpresa");
+        }
+        
+        // Ayuda
+        else if (source == manualUsuario) {
+            JOptionPane.showMessageDialog(father,
+                "El manual de usuario se abrirá en su navegador predeterminado.",
+                "Manual de Usuario",
+                JOptionPane.INFORMATION_MESSAGE);
+        } else if (source == acercaDe) {
+            JOptionPane.showMessageDialog(father,
+                "Sistema de Facturación v1.0\n© 2024 Berenjeneitor",
+                "Acerca de",
+                JOptionPane.INFORMATION_MESSAGE);
         }
     }
 }

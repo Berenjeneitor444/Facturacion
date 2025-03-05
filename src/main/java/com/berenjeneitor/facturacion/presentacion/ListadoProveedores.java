@@ -1,26 +1,26 @@
 package com.berenjeneitor.facturacion.presentacion;
 
-import com.berenjeneitor.facturacion.negocio.ClientesService;
+import com.berenjeneitor.facturacion.negocio.ProveedoresService;
 import com.berenjeneitor.facturacion.negocio.ValidationException;
-import com.berenjeneitor.facturacion.persistencia.entidades.Clientes;
+import com.berenjeneitor.facturacion.persistencia.entidades.Proveedores;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class FormularioClientes extends FormularioBase {
+public class FormularioProveedores extends FormularioBase {
     private JTextField txtCIF, txtNombre, txtDireccion, txtCP;
     private JTextField txtPoblacion, txtProvincia, txtPais;
     private JTextField txtTelefono, txtEmail, txtWeb;
     private JTextField txtPersonaContacto, txtTelefonoContacto;
     private JTextArea txtObservaciones;
     
-    private final ClientesService clientesService;
-    private Clientes clienteActual;
+    private final ProveedoresService proveedoresService;
+    private Proveedores proveedorActual;
 
-    public FormularioClientes(ClientesService clientesService) {
-        super("Formulario de Cliente");
-        this.clientesService = clientesService;
-        clienteActual = new Clientes();
+    public FormularioProveedores(ProveedoresService proveedoresService) {
+        super("Formulario de Proveedor");
+        this.proveedoresService = proveedoresService;
+        proveedorActual = new Proveedores();
     }
 
     @Override
@@ -122,30 +122,30 @@ public class FormularioClientes extends FormularioBase {
             }
 
             // Crear o actualizar el objeto
-            clienteActual.setCif(cif);
-            clienteActual.setNombre(nombre);
-            clienteActual.setDireccion(txtDireccion.getText().trim());
-            clienteActual.setCp(txtCP.getText().trim());
-            clienteActual.setPoblacion(txtPoblacion.getText().trim());
-            clienteActual.setProvincia(txtProvincia.getText().trim());
-            clienteActual.setPais(txtPais.getText().trim());
-            clienteActual.setTelefono(txtTelefono.getText().trim());
-            clienteActual.setEmail(txtEmail.getText().trim());
-            clienteActual.setWeb(txtWeb.getText().trim());
-            clienteActual.setPersonaContacto(txtPersonaContacto.getText().trim());
-            clienteActual.setTelefonoContacto(txtTelefonoContacto.getText().trim());
-            clienteActual.setObservaciones(txtObservaciones.getText());
+            proveedorActual.setCif(cif);
+            proveedorActual.setNombre(nombre);
+            proveedorActual.setDireccion(txtDireccion.getText().trim());
+            proveedorActual.setCp(txtCP.getText().trim());
+            proveedorActual.setPoblacion(txtPoblacion.getText().trim());
+            proveedorActual.setProvincia(txtProvincia.getText().trim());
+            proveedorActual.setPais(txtPais.getText().trim());
+            proveedorActual.setTelefono(txtTelefono.getText().trim());
+            proveedorActual.setEmail(txtEmail.getText().trim());
+            proveedorActual.setWeb(txtWeb.getText().trim());
+            proveedorActual.setPersonaContacto(txtPersonaContacto.getText().trim());
+            proveedorActual.setTelefonoContacto(txtTelefonoContacto.getText().trim());
+            proveedorActual.setObservaciones(txtObservaciones.getText());
             
             // Guardar usando el servicio
-            clientesService.saveOrUpdate(clienteActual);
+            proveedoresService.saveOrUpdate(proveedorActual);
             
             JOptionPane.showMessageDialog(this, 
-                "Cliente guardado correctamente", 
+                "Proveedor guardado correctamente", 
                 "Éxito", 
                 JOptionPane.INFORMATION_MESSAGE);
             
             limpiarCampos();
-            clienteActual = new Clientes();
+            proveedorActual = new Proveedores();
         } catch (ValidationException e) {
             JOptionPane.showMessageDialog(this, 
                 "Error de validación: " + e.getMessage(), 
@@ -153,7 +153,7 @@ public class FormularioClientes extends FormularioBase {
                 JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, 
-                "Error al guardar el cliente: " + e.getMessage(), 
+                "Error al guardar el proveedor: " + e.getMessage(), 
                 "Error", 
                 JOptionPane.ERROR_MESSAGE);
         }
@@ -184,23 +184,23 @@ public class FormularioClientes extends FormularioBase {
         txtObservaciones.setText("");
     }
     
-    public void cargarCliente(Clientes cliente) {
-        if (cliente != null) {
-            this.clienteActual = cliente;
+    public void cargarProveedor(Proveedores proveedor) {
+        if (proveedor != null) {
+            this.proveedorActual = proveedor;
             
-            txtCIF.setText(cliente.getCif());
-            txtNombre.setText(cliente.getNombre());
-            txtDireccion.setText(cliente.getDireccion());
-            txtCP.setText(cliente.getCp());
-            txtPoblacion.setText(cliente.getPoblacion());
-            txtProvincia.setText(cliente.getProvincia());
-            txtPais.setText(cliente.getPais());
-            txtTelefono.setText(cliente.getTelefono());
-            txtEmail.setText(cliente.getEmail());
-            txtWeb.setText(cliente.getWeb());
-            txtPersonaContacto.setText(cliente.getPersonaContacto());
-            txtTelefonoContacto.setText(cliente.getTelefonoContacto());
-            txtObservaciones.setText(cliente.getObservaciones());
+            txtCIF.setText(proveedor.getCif());
+            txtNombre.setText(proveedor.getNombre());
+            txtDireccion.setText(proveedor.getDireccion());
+            txtCP.setText(proveedor.getCp());
+            txtPoblacion.setText(proveedor.getPoblacion());
+            txtProvincia.setText(proveedor.getProvincia());
+            txtPais.setText(proveedor.getPais());
+            txtTelefono.setText(proveedor.getTelefono());
+            txtEmail.setText(proveedor.getEmail());
+            txtWeb.setText(proveedor.getWeb());
+            txtPersonaContacto.setText(proveedor.getPersonaContacto());
+            txtTelefonoContacto.setText(proveedor.getTelefonoContacto());
+            txtObservaciones.setText(proveedor.getObservaciones());
         }
     }
 }
