@@ -75,7 +75,7 @@ CREATE TABLE FacturasClientes (
     fecha DATE NOT NULL,
     cliente_id INT NOT NULL,
     base_imponible DECIMAL(10,2) NOT NULL,
-    iva DECIMAL(10,2) NOT NULL,
+    iva DECIMAL(10,2) NOT NULL, -- total iva
     total DECIMAL(10,2) NOT NULL,
     hash VARCHAR(128),
     qr VARCHAR(4296),
@@ -93,10 +93,12 @@ CREATE TABLE RectificativasClientes (
     numero INT NOT NULL UNIQUE,
     fecha DATE NOT NULL,
     cliente_id INT NOT NULL,
+    factura_id INT NOT NULL,
     base_imponible DECIMAL(10,2) NOT NULL,
     iva DECIMAL(10,2) NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     observaciones TEXT,
+    FOREIGN KEY (factura_id) REFERENCES FacturasClientes(id),
     FOREIGN KEY (cliente_id) REFERENCES Clientes(id),
     FOREIGN KEY (iva_id) REFERENCES TiposIva(id)
 );
@@ -115,7 +117,7 @@ CREATE TABLE LineasFacturasClientes (
     articulo_id INT NOT NULL,
     cantidad DECIMAL(10,2) NOT NULL,
     descripcion VARCHAR(80),
-    codigo VARCHAR(50) NOT NULL, -- se refiere al codigo del articulo
+    codigo VARCHAR(50), -- se refiere al codigo del articulo
     precio_unitario DECIMAL(10,2) NOT NULL,
     iva DECIMAL(10,2) NOT NULL,
     base_imponible DECIMAL(10,2) NOT NULL,

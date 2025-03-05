@@ -45,6 +45,11 @@ public class RectificativasClientes implements Serializable {
     @OneToMany(mappedBy = "rectificativa", cascade = CascadeType.ALL)
     private List<LineasRectificativa> lineasRectificativa;
 
+
+    @ManyToOne
+    @JoinColumn(name = "factura_id")
+    private FacturasClientes factura;
+
     public RectificativasClientes() {
     }
 
@@ -135,5 +140,13 @@ public class RectificativasClientes implements Serializable {
 
     public void setLineasRectificativa(List<LineasRectificativa> lineasRectificativa) {
         this.lineasRectificativa = lineasRectificativa;
+    }
+
+    public FacturasClientes getFactura() {
+        return factura;
+    }
+
+    public void setFactura(FacturasClientes factura) {
+        this.factura = factura;
     }
 }

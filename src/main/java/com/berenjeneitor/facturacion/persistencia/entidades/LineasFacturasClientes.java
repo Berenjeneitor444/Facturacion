@@ -23,7 +23,7 @@ public class LineasFacturasClientes implements Serializable {
     @Column(length = 80)
     private String descripcion;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String codigo;
 
     @Column(nullable = false, precision = 10, scale = 2)

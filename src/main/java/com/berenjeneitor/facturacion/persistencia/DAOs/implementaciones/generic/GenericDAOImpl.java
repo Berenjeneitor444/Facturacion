@@ -63,4 +63,15 @@ public abstract class GenericDAOImpl<T, ID extends Serializable> implements Gene
             throw e;
         }
     }
+    @Override
+    public int count(String whereClausule){
+        try (Session session = sessionFactory.openSession()) {
+            if(whereClausule != null){
+                return session.createQuery("select count(*) from " + persistentClass.getName() + " where " + whereClausule, Number.class)
+                        .getSingleResult().intValue();
+            }
+            return session.createQuery("select count(*) from " + persistentClass.getName(), Number.class)
+                    .getSingleResult().intValue();
+        }
+    }
 }

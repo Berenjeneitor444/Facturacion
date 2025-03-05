@@ -49,6 +49,9 @@ public class FacturasClientes implements Serializable {
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL)
     private List<LineasFacturasClientes> lineasFactura;
 
+    @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RectificativasClientes> rectificativas;
+
     @Column(name = "fecha_cobro")
     private Date fechaCobro;
 
@@ -169,5 +172,13 @@ public class FacturasClientes implements Serializable {
 
     public void setLineasFactura(List<LineasFacturasClientes> lineasFactura) {
         this.lineasFactura = lineasFactura;
+    }
+
+    public List<RectificativasClientes> getRectificativas() {
+        return rectificativas;
+    }
+
+    public void setRectificativas(List<RectificativasClientes> rectificativas) {
+        this.rectificativas = rectificativas;
     }
 }

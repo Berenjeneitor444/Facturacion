@@ -3,6 +3,7 @@ package com.berenjeneitor.facturacion.persistencia.DAOs.implementaciones;
 import com.berenjeneitor.facturacion.persistencia.DAOs.implementaciones.generic.GenericDAOImpl;
 import com.berenjeneitor.facturacion.persistencia.DAOs.interfaces.RectificativasClientesDAO;
 import com.berenjeneitor.facturacion.persistencia.entidades.Clientes;
+import com.berenjeneitor.facturacion.persistencia.entidades.FacturasClientes;
 import com.berenjeneitor.facturacion.persistencia.entidades.RectificativasClientes;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -55,6 +56,16 @@ public class RectificativasClientesDAOImpl extends GenericDAOImpl<Rectificativas
                     "FROM RectificativasClientes WHERE fecha BETWEEN :fechaInicio AND :fechaFin", RectificativasClientes.class);
             query.setParameter("fechaInicio", fechaInicio);
             query.setParameter("fechaFin", fechaFin);
+            return query.getResultList();
+        }
+    }
+
+    @Override
+    public List<RectificativasClientes> findByFacturaCliente(FacturasClientes factura) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<RectificativasClientes> query = session.createQuery(
+                    "FROM RectificativasClientes WHERE facturaCliente = :factura", RectificativasClientes.class);
+            query.setParameter("factura", factura);
             return query.getResultList();
         }
     }

@@ -1,9 +1,9 @@
 package com.berenjeneitor.facturacion;
 
-import com.berenjeneitor.facturacion.presentacion.MainMenu;
+import com.berenjeneitor.facturacion.presentacion.Home;
 
 public class Facturacion {
     public static void main(String[] args) {
-        MainMenu mainMenu = new MainMenu();
+        Home home = new Home();
     }
 }
