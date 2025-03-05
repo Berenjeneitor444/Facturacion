@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_INJECTED_CODE" value="false" />
+    <option name="SCOPE_TYPE" value="3" />
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ce3d111-d901-45ca-a953-9e4b299b1f33" name="Changes" comment="odio">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioArticulos.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioArticulos.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioBase.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioClientes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioClientes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioProveedores.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioProveedores.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/ClientesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/ClientesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/generic/GenericService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/generic/GenericService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/generic/GenericServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/negocio/generic/GenericServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ConfiguracionEmpresa.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/DialogUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/EmpresaConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioArticulos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioClientes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioFacturas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioFamiliaArticulos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioFormasPago.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioProveedores.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormularioRectificativas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/FormulariosTiposIva.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/Home.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/Home.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoArticulos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoBase.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoClientes.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoFacturas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoFamiliasArticulos.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoFormasPago.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoProveedores.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoRectificativas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/ListadoTiposIVA.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/MainFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/MainFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/MyMenuBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/berenjeneitor/facturacion/presentacion/MyMenuBar.java" afterDir="false" />
     </list>
@@ -29,7 +54,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -50,6 +75,7 @@
     "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
+    "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
@@ -71,6 +97,19 @@
       <option name="presentableId" value="Default" />
       <updated>1739551703842</updated>
     </task>
+    <task id="LOCAL-00001" summary="odio">
+      <option name="closed" value="true" />
+      <created>1741178319142</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1741178319142</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="odio" />
+    <option name="LAST_COMMIT_MESSAGE" value="odio" />
   </component>
 </project>

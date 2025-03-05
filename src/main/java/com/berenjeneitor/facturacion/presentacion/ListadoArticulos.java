@@ -4,169 +4,146 @@ import com.berenjeneitor.facturacion.negocio.ArticulosService;
 import com.berenjeneitor.facturacion.persistencia.entidades.Articulos;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
-public class ListadoArticulos extends ListadoBase {
-    private JComboBox<String> cmbFiltroFamilia;
+public class ListadoArticulos extends JPanel {
     private final ArticulosService articulosService;
-    private NumberFormat currencyFormat;
+    private final MainFrame mainFrame;
+    private final DefaultTableModel tableModel;
+    private final JTable table;
+    private final JTextField txtBuscar;
 
     public ListadoArticulos(ArticulosService articulosService, MainFrame mainFrame) {
-        super("Listado de Artículos", mainFrame);
         this.articulosService = articulosService;
-        this.currencyFormat = NumberFormat.getCurrencyInstance(new Locale("es", "ES"));
-        
-        // Agregar filtro de familia
-        JPanel panelBusqueda = (JPanel) getComponent(2); // El panel de búsqueda está en el SOUTH
-        panelBusqueda.add(new JLabel("Familia:"));
-        cmbFiltroFamilia = new JComboBox<>(new String[]{"Todas"});
-        panelBusqueda.add(cmbFiltroFamilia);
-        
-        // Cargar datos iniciales
-        cargarFamilias();
-    }
-    
-    private void cargarFamilias() {
-        // Aquí se cargarían las familias desde el servicio
-        // Por ahora solo tenemos "Todas" como ejemplo
-    }
-    
-    @Override
-    protected void inicializarTabla() {
-        String[] columnas = {"ID", "Código", "Descripción", "Familia", "Precio", "Stock"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        this.mainFrame = mainFrame;
+
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Search Panel
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        txtBuscar = new JTextField(20);
+        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar.addActionListener(e -> buscarArticulos());
+
+        searchPanel.add(new JLabel("Buscar:"));
+        searchPanel.add(txtBuscar);
+        searchPanel.add(btnBuscar);
+
+        // Table
+        String[] columnNames = {"Código", "Descripción", "Familia", "PVP", "Stock"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
-        tabla = new JTable(modeloTabla);
-        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabla.getTableHeader().setReorderingAllowed(false);
-        
-        // Ocultar la columna ID
-        tabla.getColumnModel().getColumn(0).setMinWidth(0);
-        tabla.getColumnModel().getColumn(0).setMaxWidth(0);
-        tabla.getColumnModel().getColumn(0).setWidth(0);
+
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnNuevo = new JButton("Nuevo");
+        JButton btnEditar = new JButton("Editar");
+        JButton btnEliminar = new JButton("Eliminar");
+
+        btnNuevo.addActionListener(e -> nuevoArticulo());
+        btnEditar.addActionListener(e -> editarArticulo());
+        btnEliminar.addActionListener(e -> eliminarArticulo());
+
+        buttonsPanel.add(btnNuevo);
+        buttonsPanel.add(btnEditar);
+        buttonsPanel.add(btnEliminar);
+
+        // Add components
+        add(searchPanel, BorderLayout.NORTH);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Load initial data
+        cargarArticulos();
     }
 
-    @Override
-    protected void cargarDatos() {
-        // Limpiar tabla
-        while (modeloTabla.getRowCount() > 0) {
-            modeloTabla.removeRow(0);
-        }
-        
-        // Obtener artículos y cargar en tabla
+    private void cargarArticulos() {
+        tableModel.setRowCount(0);
         List<Articulos> articulos = articulosService.findAll();
         for (Articulos articulo : articulos) {
-            Object[] fila = {
-                articulo.getId(),
+            Object[] row = {
                 articulo.getCodigo(),
                 articulo.getDescripcion(),
-                articulo.getFamilia() != null ? articulo.getFamilia().getDenominacion() : "",
-                currencyFormat.format(articulo.getPvp()),
+                articulo.getFamilia().getDenominacion(),
+                articulo.getPvp(),
                 articulo.getStock()
             };
-            modeloTabla.addRow(fila);
+            tableModel.addRow(row);
         }
-    
-    @Override
-    protected void buscar() {
-        String termino = txtBusqueda.getText().trim();
-        String familia = cmbFiltroFamilia.getSelectedItem().toString();
-        
-        // Limpiar tabla
-        while (modeloTabla.getRowCount() > 0) {
-            modeloTabla.removeRow(0);
-        }
-        
-        // Buscar artículos según filtros
-        List<Articulos> articulos;
-        if (termino.isEmpty() && "Todas".equals(familia)) {
-            articulos = articulosService.findAll();
-        } else {
-            articulos = articulosService.buscarPorFiltros(termino, familia);
-        }
-        
+    }
+
+    private void buscarArticulos() {
+        String busqueda = txtBuscar.getText().trim().toLowerCase();
+        tableModel.setRowCount(0);
+
+        List<Articulos> articulos = articulosService.findAll();
         for (Articulos articulo : articulos) {
-            Object[] fila = {
-                articulo.getId(),
-                articulo.getCodigo(),
-                articulo.getDescripcion(),
-                articulo.getFamilia() != null ? articulo.getFamilia().getDenominacion() : "",
-                currencyFormat.format(articulo.getPvp()),
-                articulo.getStock()
-            };
-            modeloTabla.addRow(fila);
+            if (articulo.getDescripcion().toLowerCase().contains(busqueda) ||
+                articulo.getCodigo().toLowerCase().contains(busqueda)) {
+                Object[] row = {
+                    articulo.getCodigo(),
+                    articulo.getDescripcion(),
+                    articulo.getFamilia().getDenominacion(),
+                    articulo.getPvp(),
+                    articulo.getStock()
+                };
+                tableModel.addRow(row);
+            }
         }
-    
-    @Override
-    protected void nuevo() {
+    }
+
+    private void nuevoArticulo() {
         mainFrame.showCard("Articulos");
     }
-    
-    @Override
-    protected void editar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada == -1) {
+
+    private void editarArticulo() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
                 "Por favor, seleccione un artículo para editar",
-                "Selección requerida",
-                JOptionPane.WARNING_MESSAGE);
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Integer idArticulo = (Integer) modeloTabla.getValueAt(filaSeleccionada, 0);
-        // Aquí iría la lógica para cargar el artículo en el formulario
+
+        String codigo = (String) table.getValueAt(selectedRow, 0);
+        Articulos articulo = articulosService.findByCodigo(codigo);
+        // TODO: Implement edit functionality
         mainFrame.showCard("Articulos");
-        // Y luego cargar los datos del artículo en el formulario
     }
-    
-    @Override
-    protected void eliminar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada == -1) {
+
+    private void eliminarArticulo() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this,
                 "Por favor, seleccione un artículo para eliminar",
-                "Selección requerida",
-                JOptionPane.WARNING_MESSAGE);
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        Integer idArticulo = (Integer) modeloTabla.getValueAt(filaSeleccionada, 0);
-        String codigoArticulo = (String) modeloTabla.getValueAt(filaSeleccionada, 1);
-        String descripcionArticulo = (String) modeloTabla.getValueAt(filaSeleccionada, 2);
-        
-        int confirmacion = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de que desea eliminar el artículo '" + codigoArticulo + " - " + descripcionArticulo + "'?",
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro de que desea eliminar este artículo?",
             "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-            
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            try {
-                articulosService.findById(idArticulo).ifPresent(articulo -> {
-                    articulosService.delete(articulo);
-                    cargarDatos();
-                    JOptionPane.showMessageDialog(this,
-                        "Artículo eliminado correctamente",
-                        "Éxito",
-                        JOptionPane.INFORMATION_MESSAGE);
-                });
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                    "Error al eliminar el artículo: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            }
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            String codigo = (String) table.getValueAt(selectedRow, 0);
+            Articulos articulo = articulosService.findByCodigo(codigo);
+            articulosService.delete(articulo);
+            cargarArticulos();
         }
     }
 }

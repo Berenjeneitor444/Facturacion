@@ -1,6 +1,8 @@
 package com.berenjeneitor.facturacion.presentacion;
 
-import com.berenjeneitor.facturacion.negocio.*;
+import com.berenjeneitor.facturacion.negocio.RectificativasClientesService;
+import com.berenjeneitor.facturacion.negocio.ClientesService;
+import com.berenjeneitor.facturacion.negocio.ArticulosService;
 import com.berenjeneitor.facturacion.persistencia.entidades.*;
 
 import javax.swing.*;
@@ -12,14 +14,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class FormularioFacturas extends JPanel {
-    private final FacturasClientesService facturasService;
+public class FormularioRectificativasClientes extends JPanel {
+    private final RectificativasClientesService rectificativasService;
     private final ClientesService clientesService;
     private final ArticulosService articulosService;
 
     private JComboBox<Clientes> clienteComboBox;
     private JTextField numeroField;
     private JTextField fechaField;
+    private JComboBox<FacturasClientes> facturaComboBox;
     private JTable lineasTable;
     private DefaultTableModel tableModel;
     private JTextField baseImponibleField;
@@ -27,8 +30,10 @@ public class FormularioFacturas extends JPanel {
     private JTextField totalField;
     private JTextArea observacionesArea;
 
-    public FormularioFacturas(FacturasClientesService facturasService, ClientesService clientesService, ArticulosService articulosService) {
-        this.facturasService = facturasService;
+    public FormularioRectificativasClientes(RectificativasClientesService rectificativasService,
+                                           ClientesService clientesService,
+                                           ArticulosService articulosService) {
+        this.rectificativasService = rectificativasService;
         this.clientesService = clientesService;
         this.articulosService = articulosService;
 
@@ -73,24 +78,35 @@ public class FormularioFacturas extends JPanel {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         clienteComboBox = new JComboBox<>();
+        clienteComboBox.addActionListener(e -> loadFacturasCliente());
         panel.add(clienteComboBox, gbc);
 
-        // Número
+        // Factura Original
         gbc.gridx = 2;
+        gbc.weightx = 0.0;
+        panel.add(new JLabel("Factura Original:"), gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 1.0;
+        facturaComboBox = new JComboBox<>();
+        panel.add(facturaComboBox, gbc);
+
+        // Número
+        gbc.gridx = 4;
         gbc.weightx = 0.0;
         panel.add(new JLabel("Número:"), gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 5;
         gbc.weightx = 0.5;
         numeroField = new JTextField();
         panel.add(numeroField, gbc);
 
         // Fecha
-        gbc.gridx = 4;
+        gbc.gridx = 6;
         gbc.weightx = 0.0;
         panel.add(new JLabel("Fecha:"), gbc);
 
-        gbc.gridx = 5;
+        gbc.gridx = 7;
         gbc.weightx = 0.5;
         fechaField = new JTextField();
         panel.add(fechaField, gbc);
@@ -100,7 +116,7 @@ public class FormularioFacturas extends JPanel {
 
     private JPanel createLineasPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createTitledBorder("Líneas de Factura"));
+        panel.setBorder(BorderFactory.createTitledBorder("Líneas de Rectificativa"));
 
         // Table
         String[] columnNames = {"Artículo", "Descripción", "Cantidad", "Precio", "IVA", "Base Imponible", "Total"};
@@ -191,7 +207,7 @@ public class FormularioFacturas extends JPanel {
         JButton saveButton = new JButton("Guardar");
         JButton clearButton = new JButton("Limpiar");
 
-        saveButton.addActionListener(e -> saveFactura());
+        saveButton.addActionListener(e -> saveRectificativa());
         clearButton.addActionListener(e -> clearForm());
 
         panel.add(saveButton);
@@ -216,10 +232,16 @@ public class FormularioFacturas extends JPanel {
         }
     }
 
+    private void loadFacturasCliente() {
+        Clientes cliente = (Clientes) clienteComboBox.getSelectedItem();
+        if (cliente != null) {
+            // TODO: Implement loading of client's invoices
+            // facturaComboBox.setModel(new DefaultComboBoxModel<>(facturas.toArray(new FacturasClientes[0])));
+        }
+    }
+
     private void addLinea() {
-        // Show dialog to select article and quantity
-        // Add line to table
-        // Update totals
+        // TODO: Implement adding a new line to the rectification invoice
     }
 
     private void removeLinea() {
@@ -247,46 +269,50 @@ public class FormularioFacturas extends JPanel {
         totalField.setText(total.toString());
     }
 
-    private void saveFactura() {
+    private void saveRectificativa() {
         try {
             // Validate form
             if (clienteComboBox.getSelectedItem() == null) {
                 throw new Exception("Debe seleccionar un cliente");
             }
+            if (facturaComboBox.getSelectedItem() == null) {
+                throw new Exception("Debe seleccionar una factura original");
+            }
             if (tableModel.getRowCount() == 0) {
-                throw new Exception("Debe añadir al menos una línea a la factura");
+                throw new Exception("Debe añadir al menos una línea a la rectificativa");
             }
 
-            // Create factura
-            FacturasClientes factura = new FacturasClientes();
-            factura.setCliente((Clientes) clienteComboBox.getSelectedItem());
-            factura.setFecha(new Date()); // TODO: Parse from fechaField
-            factura.setNumero(Integer.parseInt(numeroField.getText()));
-            factura.setBaseImponible(new BigDecimal(baseImponibleField.getText()));
-            factura.setIva(new BigDecimal(ivaField.getText()));
-            factura.setTotal(new BigDecimal(totalField.getText()));
-            factura.setObservaciones(observacionesArea.getText());
+            // Create rectificativa
+            RectificativasClientes rectificativa = new RectificativasClientes();
+            rectificativa.setCliente((Clientes) clienteComboBox.getSelectedItem());
+            rectificativa.setFactura((FacturasClientes) facturaComboBox.getSelectedItem());
+            rectificativa.setFecha(new Date()); // TODO: Parse from fechaField
+            rectificativa.setNumero(Integer.parseInt(numeroField.getText()));
+            rectificativa.setBaseImponible(new BigDecimal(baseImponibleField.getText()));
+            rectificativa.setIva(new BigDecimal(ivaField.getText()));
+            rectificativa.setTotal(new BigDecimal(totalField.getText()));
+            rectificativa.setObservaciones(observacionesArea.getText());
 
             // Create lineas
-            List<LineasFacturasClientes> lineas = new ArrayList<>();
+            List<LineasRectificativa> lineas = new ArrayList<>();
             for (int i = 0; i < tableModel.getRowCount(); i++) {
-                LineasFacturasClientes linea = new LineasFacturasClientes();
-                linea.setFactura(factura);
-                // Set line data from table
+                LineasRectificativa linea = new LineasRectificativa();
+                linea.setRectificativa(rectificativa);
+                // TODO: Set line data from table
                 lineas.add(linea);
             }
-            factura.setLineasFactura(lineas);
+            rectificativa.setLineasRectificativa(lineas);
 
             // Save
-            facturasService.saveOrUpdate(factura);
+            rectificativasService.saveOrUpdate(rectificativa);
             JOptionPane.showMessageDialog(this,
-                    "Factura guardada correctamente",
+                    "Rectificativa guardada correctamente",
                     "Éxito",
                     JOptionPane.INFORMATION_MESSAGE);
             clearForm();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                    "Error al guardar la factura: " + e.getMessage(),
+                    "Error al guardar la rectificativa: " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -294,6 +320,7 @@ public class FormularioFacturas extends JPanel {
 
     private void clearForm() {
         clienteComboBox.setSelectedIndex(-1);
+        facturaComboBox.setSelectedIndex(-1);
         numeroField.setText("");
         fechaField.setText("");
         tableModel.setRowCount(0);

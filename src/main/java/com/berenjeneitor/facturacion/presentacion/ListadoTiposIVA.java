@@ -1,113 +1,145 @@
 package com.berenjeneitor.facturacion.presentacion;
 
-import com.berenjeneitor.facturacion.negocio.TiposIVAService;
-import com.berenjeneitor.facturacion.persistencia.entidades.TipoIVA;
+import com.berenjeneitor.facturacion.negocio.*;
+import com.berenjeneitor.facturacion.persistencia.entidades.*;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
+import java.util.Optional;
 
-public class ListadoTiposIVA extends ListadoBase {
+public class ListadoTiposIVA extends JPanel {
     private final TiposIVAService tiposIVAService;
+    private final MainFrame father;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
 
-    public ListadoTiposIVA(TiposIVAService tiposIVAService, MainFrame mainFrame) {
-        super("Listado de Tipos de IVA", mainFrame);
+    public ListadoTiposIVA(TiposIVAService tiposIVAService, MainFrame father) {
         this.tiposIVAService = tiposIVAService;
-    }
+        this.father = father;
+        setLayout(new BorderLayout());
 
-    @Override
-    protected void inicializarTabla() {
-        String[] columnas = {"ID", "Tipo", "Porcentaje", "Descripción"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        // Create table model
+        String[] columnNames = {"ID", "IVA (%)", "Observaciones"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tabla = new JTable(modeloTabla);
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(100);
-        tabla.getColumnModel().getColumn(3).setPreferredWidth(300);
+
+        // Create table
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(100);
+        table.getColumnModel().getColumn(2).setPreferredWidth(300);
+
+        // Scroll pane for table
+        JScrollPane scrollPane = new JScrollPane(table);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Buttons panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton refreshButton = new JButton("Actualizar");
+        JButton editButton = new JButton("Editar");
+        JButton deleteButton = new JButton("Eliminar");
+
+        refreshButton.addActionListener(e -> refreshTable());
+        editButton.addActionListener(e -> editSelectedIVA());
+        deleteButton.addActionListener(e -> deleteSelectedIVA());
+
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(deleteButton);
+
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Initial load
+        refreshTable();
     }
 
-    @Override
-    protected void cargarDatos() {
-        modeloTabla.setRowCount(0);
+    private void refreshTable() {
+        tableModel.setRowCount(0);
         try {
-            List<TipoIVA> tiposIVA = tiposIVAService.findAll();
-            for (TipoIVA tipoIVA : tiposIVA) {
-                Object[] fila = {
-                    tipoIVA.getId(),
-                    tipoIVA.getTipo(),
-                    tipoIVA.getPorcentaje(),
-                    tipoIVA.getDescripcion()
+            List<TiposIVA> tiposIVA = tiposIVAService.findAll();
+            for (TiposIVA tipo : tiposIVA) {
+                Object[] row = {
+                    tipo.getId(),
+                    tipo.getIva(),
+                    tipo.getObservaciones()
                 };
-                modeloTabla.addRow(fila);
+                tableModel.addRow(row);
             }
         } catch (Exception e) {
-            mostrarError("Error al cargar los tipos de IVA: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar los tipos de IVA: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    @Override
-    protected void buscar() {
-        String textoBusqueda = txtBusqueda.getText().trim().toLowerCase();
-        modeloTabla.setRowCount(0);
-        try {
-            List<TipoIVA> tiposIVA = tiposIVAService.findAll();
-            for (TipoIVA tipoIVA : tiposIVA) {
-                if (tipoIVA.getTipo().toLowerCase().contains(textoBusqueda) ||
-                    tipoIVA.getDescripcion().toLowerCase().contains(textoBusqueda)) {
-                    Object[] fila = {
-                        tipoIVA.getId(),
-                        tipoIVA.getTipo(),
-                        tipoIVA.getPorcentaje(),
-                        tipoIVA.getDescripcion()
-                    };
-                    modeloTabla.addRow(fila);
+    private void editSelectedIVA() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer id = (Integer) tableModel.getValueAt(selectedRow, 0);
+            try {
+                Optional<TiposIVA> tipoIVA = tiposIVAService.findById(id);
+                if (tipoIVA.isPresent()) {
+                    // Show edit dialog
+                    EditTiposIVADialog dialog = new EditTiposIVADialog(father, (TiposIVA) tipoIVA.get(), tiposIVAService);
+                    dialog.setVisible(true);
+                    refreshTable();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Tipo de IVA no encontrado",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cargar el tipo de IVA: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            mostrarError("Error al buscar tipos de IVA: " + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void nuevo() {
-        mainFrame.showCard("TiposIVA");
-    }
-
-    @Override
-    protected void editar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            Long id = (Long) tabla.getValueAt(filaSeleccionada, 0);
-            // Aquí iría la lógica para cargar el formulario de edición
-            mainFrame.showCard("TiposIVA");
         } else {
-            mostrarError("Por favor, seleccione un tipo de IVA para editar");
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un tipo de IVA para editar",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    @Override
-    protected void eliminar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            Long id = (Long) tabla.getValueAt(filaSeleccionada, 0);
-            String tipo = (String) tabla.getValueAt(filaSeleccionada, 1);
+    private void deleteSelectedIVA() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer id = (Integer) tableModel.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro de que desea eliminar este tipo de IVA?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION);
             
-            if (confirmarEliminacion("el tipo de IVA '" + tipo + "'")) {
+            if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    tiposIVAService.delete(id);
-                    mostrarConfirmacion("Tipo de IVA eliminado correctamente");
-                    cargarDatos();
+                    tiposIVAService.deleteById(id);
+                    refreshTable();
+                    JOptionPane.showMessageDialog(this,
+                            "Tipo de IVA eliminado correctamente",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e) {
-                    mostrarError("Error al eliminar el tipo de IVA: " + e.getMessage());
+                    JOptionPane.showMessageDialog(this,
+                            "Error al eliminar el tipo de IVA: " + e.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         } else {
-            mostrarError("Por favor, seleccione un tipo de IVA para eliminar");
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un tipo de IVA para eliminar",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 }

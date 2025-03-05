@@ -81,4 +81,9 @@ public class ClientesService extends GenericServiceImpl<Clientes, Integer> {
     public List<Clientes> findByProvincia(String provincia) {
         return clienteDAO.findByProvincia(provincia);
     }
+
+    public Clientes findByCif(String cif) {
+        return clienteDAO.findByCif(cif)
+                .orElseThrow(() -> new ValidationException("Cliente no encontrado"));
+    }
 }

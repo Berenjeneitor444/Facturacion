@@ -13,4 +13,5 @@ public interface GenericService<T, ID extends Serializable> {
     void delete(T entity);
     void validate(T entity) throws ValidationException;
     T processEntity(T entity);
+    void deleteById(ID id);
 }

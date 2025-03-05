@@ -3,177 +3,164 @@ package com.berenjeneitor.facturacion.presentacion;
 import com.berenjeneitor.facturacion.negocio.ArticulosService;
 import com.berenjeneitor.facturacion.negocio.FamiliaArticulosService;
 import com.berenjeneitor.facturacion.negocio.TiposIVAService;
-import com.berenjeneitor.facturacion.negocio.ValidationException;
 import com.berenjeneitor.facturacion.persistencia.entidades.Articulos;
 import com.berenjeneitor.facturacion.persistencia.entidades.FamiliaArticulos;
 import com.berenjeneitor.facturacion.persistencia.entidades.TiposIVA;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
-public class FormularioArticulos extends FormularioBase {
-    private JTextField txtCodigo, txtDescripcion;
-    private JComboBox<FamiliaArticulos> cmbFamilia;
-    private JComboBox<TiposIVA> cmbTipoIVA;
-    private JFormattedTextField txtPrecio, txtCoste, txtStock;
-    private JTextArea txtObservaciones;
-    private NumberFormat currencyFormat;
-    private NumberFormat numberFormat;
-    
+public class FormularioArticulos extends JPanel {
     private final ArticulosService articulosService;
     private final FamiliaArticulosService familiaArticulosService;
     private final TiposIVAService tiposIVAService;
-    
-    private Articulos articuloActual;
 
-    public FormularioArticulos(ArticulosService articulosService, 
-                              FamiliaArticulosService familiaArticulosService,
-                              TiposIVAService tiposIVAService) {
-        super("Formulario de Artículo");
+    private JTextField txtDescripcion;
+    private JComboBox<FamiliaArticulos> cmbFamilia;
+    private JComboBox<TiposIVA> cmbTipoIVA;
+    private JTextField txtCoste;
+    private JTextField txtPVP;
+    private JTextField txtStock;
+    private JTextArea txtObservaciones;
+
+    public FormularioArticulos(ArticulosService articulosService,
+                             FamiliaArticulosService familiaArticulosService,
+                             TiposIVAService tiposIVAService) {
         this.articulosService = articulosService;
         this.familiaArticulosService = familiaArticulosService;
         this.tiposIVAService = tiposIVAService;
-        
-        currencyFormat = NumberFormat.getCurrencyInstance(new Locale("es", "ES"));
-        numberFormat = NumberFormat.getNumberInstance(new Locale("es", "ES"));
-        
-        articuloActual = new Articulos();
+
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Form Panel
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Initialize components
+        initializeComponents();
+
+        // Add components to form
+        gbc.gridx = 0; gbc.gridy = 0;
+        formPanel.add(new JLabel("Descripción:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(txtDescripcion, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 1;
+        formPanel.add(new JLabel("Familia:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(cmbFamilia, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 2;
+        formPanel.add(new JLabel("Tipo IVA:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(cmbTipoIVA, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 3;
+        formPanel.add(new JLabel("Coste:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(txtCoste, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 4;
+        formPanel.add(new JLabel("PVP:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(txtPVP, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 5;
+        formPanel.add(new JLabel("Stock:"), gbc);
+        gbc.gridx = 1;
+        formPanel.add(txtStock, gbc);
+
+        gbc.gridx = 0; gbc.gridy = 6;
+        formPanel.add(new JLabel("Observaciones:"), gbc);
+        gbc.gridx = 1; gbc.gridheight = 2;
+        formPanel.add(new JScrollPane(txtObservaciones), gbc);
+
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnGuardar = new JButton("Guardar");
+        JButton btnLimpiar = new JButton("Limpiar");
+
+        btnGuardar.addActionListener(e -> guardarArticulo());
+        btnLimpiar.addActionListener(e -> limpiarFormulario());
+
+        buttonsPanel.add(btnGuardar);
+        buttonsPanel.add(btnLimpiar);
+
+        // Add panels to main panel
+        add(new JScrollPane(formPanel), BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Load initial data
+        cargarFamilias();
+        cargarTiposIVA();
     }
 
-    @Override
-    protected void construirFormulario() {
-        panel.add(new JLabel("Código:*"));
-        txtCodigo = createTextField(20);
-        panel.add(txtCodigo);
-
-        panel.add(new JLabel("Descripción:*"));
-        txtDescripcion = createTextField(100);
-        panel.add(txtDescripcion);
-
-        panel.add(new JLabel("Familia:*"));
+    private void initializeComponents() {
+        txtDescripcion = new JTextField(20);
         cmbFamilia = new JComboBox<>();
-        cargarFamilias();
-        panel.add(cmbFamilia);
-
-        panel.add(new JLabel("Tipo IVA:*"));
         cmbTipoIVA = new JComboBox<>();
-        cargarTiposIVA();
-        panel.add(cmbTipoIVA);
-
-        panel.add(new JLabel("Coste:*"));
-        txtCoste = new JFormattedTextField(currencyFormat);
-        txtCoste.setValue(0.0);
-        txtCoste.setColumns(10);
-        panel.add(txtCoste);
-
-        panel.add(new JLabel("Precio Venta:*"));
-        txtPrecio = new JFormattedTextField(currencyFormat);
-        txtPrecio.setValue(0.0);
-        txtPrecio.setColumns(10);
-        panel.add(txtPrecio);
-
-        panel.add(new JLabel("Stock:"));
-        txtStock = new JFormattedTextField(numberFormat);
-        txtStock.setValue(0);
-        txtStock.setColumns(10);
-        panel.add(txtStock);
-
-        panel.add(new JLabel("Observaciones:"));
+        txtCoste = new JTextField(20);
+        txtPVP = new JTextField(20);
+        txtStock = new JTextField(20);
         txtObservaciones = new JTextArea(4, 20);
         txtObservaciones.setLineWrap(true);
         txtObservaciones.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(txtObservaciones);
-        panel.add(scrollPane);
     }
-    
+
     private void cargarFamilias() {
-        cmbFamilia.removeAllItems();
         List<FamiliaArticulos> familias = familiaArticulosService.findAll();
+        cmbFamilia.removeAllItems();
         for (FamiliaArticulos familia : familias) {
             cmbFamilia.addItem(familia);
         }
     }
-    
+
     private void cargarTiposIVA() {
-        cmbTipoIVA.removeAllItems();
         List<TiposIVA> tiposIVA = tiposIVAService.findAll();
+        cmbTipoIVA.removeAllItems();
         for (TiposIVA tipoIVA : tiposIVA) {
             cmbTipoIVA.addItem(tipoIVA);
         }
     }
 
-    @Override
-    protected void guardar() {
+    private void guardarArticulo() {
         try {
-            // Recoger datos
-            String codigo = txtCodigo.getText().trim();
-            String descripcion = txtDescripcion.getText().trim();
-            FamiliaArticulos familia = (FamiliaArticulos) cmbFamilia.getSelectedItem();
-            TiposIVA tipoIVA = (TiposIVA) cmbTipoIVA.getSelectedItem();
-            BigDecimal coste = BigDecimal.valueOf(((Number)txtCoste.getValue()).doubleValue());
-            BigDecimal precio = BigDecimal.valueOf(((Number)txtPrecio.getValue()).doubleValue());
-            BigDecimal stock = BigDecimal.valueOf(((Number)txtStock.getValue()).doubleValue());
-            String observaciones = txtObservaciones.getText();
+            Articulos articulo = new Articulos();
+            articulo.setDescripcion(txtDescripcion.getText());
+            articulo.setFamilia((FamiliaArticulos) cmbFamilia.getSelectedItem());
+            articulo.setTipoIVA((TiposIVA) cmbTipoIVA.getSelectedItem());
+            articulo.setCoste(new BigDecimal(txtCoste.getText()));
+            articulo.setPvp(new BigDecimal(txtPVP.getText()));
+            articulo.setStock(new BigDecimal(txtStock.getText()));
+            articulo.setObservaciones(txtObservaciones.getText());
 
-            // Validar datos básicos antes de crear el objeto
-            if (codigo.isEmpty() || descripcion.isEmpty() || familia == null || tipoIVA == null) {
-                JOptionPane.showMessageDialog(this, 
-                    "Todos los campos marcados con * son obligatorios", 
-                    "Error de validación", 
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Crear o actualizar el objeto
-            articuloActual.setCodigo(codigo);
-            articuloActual.setDescripcion(descripcion);
-            articuloActual.setFamilia(familia);
-            articuloActual.setTipoIVA(tipoIVA);
-            articuloActual.setCoste(coste);
-            articuloActual.setPvp(precio);
-            articuloActual.setStock(stock);
-            articuloActual.setObservaciones(observaciones);
-
-            // Guardar usando el servicio
-            articulosService.saveOrUpdate(articuloActual);
-
-            JOptionPane.showMessageDialog(this, 
-                "Artículo guardado correctamente", 
-                "Éxito", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-            limpiarCampos();
-            articuloActual = new Articulos();
-        } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error de validación: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            articulosService.saveOrUpdate(articulo);
+            JOptionPane.showMessageDialog(this,
+                    "Artículo guardado correctamente",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormulario();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar el artículo: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error al guardar el artículo: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
-    @Override
-    protected void limpiarCampos() {
-        txtCodigo.setText("");
+
+    private void limpiarFormulario() {
         txtDescripcion.setText("");
-        if (cmbFamilia.getItemCount() > 0) {
-            cmbFamilia.setSelectedIndex(0);
-        }
-        if (cmbTipoIVA.getItemCount() > 0) {
-            cmbTipoIVA.setSelectedIndex(0);
-        }
-        txtCoste.setValue(0.0);
-        txtPrecio.setValue(0.0);
-        txtStock.setValue(0);
+        cmbFamilia.setSelectedIndex(0);
+        cmbTipoIVA.setSelectedIndex(0);
+        txtCoste.setText("");
+        txtPVP.setText("");
+        txtStock.setText("");
         txtObservaciones.setText("");
     }
 }

@@ -1,6 +1,5 @@
 package com.berenjeneitor.facturacion.negocio.generic;
 
-import com.berenjeneitor.facturacion.negocio.ValidationException;
 import com.berenjeneitor.facturacion.persistencia.DAOs.interfaces.generic.GenericDAO;
 
 import java.io.Serializable;
@@ -32,6 +31,12 @@ public abstract class GenericServiceImpl<T, ID extends Serializable> implements 
     @Override
     public void delete(T entity) {
         dao.delete(entity);
+    }
+
+    @Override
+    public void deleteById(ID id) {
+        Optional<T> entity = findById(id);
+        entity.ifPresent(this::delete);
     }
 
 }

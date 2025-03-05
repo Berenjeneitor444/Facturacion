@@ -5,7 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class Home extends JPanel {
-    EmpresaConfig empresaConfig = new EmpresaConfig();
     public Home() {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -15,7 +14,7 @@ public class Home extends JPanel {
         gbc.anchor = GridBagConstraints.CENTER;
 
         // Declaración de componentes
-        JLabel lblEmpresa = new JLabel(empresaConfig.get("empresa.nombre"));
+        JLabel lblEmpresa = new JLabel("Mi empresa");
         lblEmpresa.setFont(new Font("Arial", Font.BOLD, 20));
         ImageIcon imgEmpresa = new ImageIcon("src/main/resources/empresa.png");
         imgEmpresa.setImage(imgEmpresa.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
@@ -31,6 +30,7 @@ public class Home extends JPanel {
     }
     private JTable createStatisticsTable(){
         DefaultTableModel dtm = new DefaultTableModel(new Object[]{"Tipo", "Cantidad"}, 0);
+        //TODO: Here will be the logic to get the statistics from the database, the statisistics will be the number of each entity stores by the moment
         return new JTable(dtm);
     }
 }

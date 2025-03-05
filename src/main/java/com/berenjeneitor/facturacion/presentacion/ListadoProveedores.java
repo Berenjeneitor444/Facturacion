@@ -1,206 +1,151 @@
 package com.berenjeneitor.facturacion.presentacion;
 
 import com.berenjeneitor.facturacion.negocio.ProveedoresService;
-import com.berenjeneitor.facturacion.negocio.ValidationException;
 import com.berenjeneitor.facturacion.persistencia.entidades.Proveedores;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
-public class FormularioProveedores extends FormularioBase {
-    private JTextField txtCIF, txtNombre, txtDireccion, txtCP;
-    private JTextField txtPoblacion, txtProvincia, txtPais;
-    private JTextField txtTelefono, txtEmail, txtWeb;
-    private JTextField txtPersonaContacto, txtTelefonoContacto;
-    private JTextArea txtObservaciones;
-    
+public class ListadoProveedores extends JPanel {
     private final ProveedoresService proveedoresService;
-    private Proveedores proveedorActual;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
 
-    public FormularioProveedores(ProveedoresService proveedoresService) {
-        super("Formulario de Proveedor");
+    public ListadoProveedores(ProveedoresService proveedoresService) {
         this.proveedoresService = proveedoresService;
-        proveedorActual = new Proveedores();
+        setLayout(new BorderLayout());
+
+        // Create table model
+        String[] columnNames = {"Código", "Nombre", "CIF", "Dirección", "Teléfono", "Email"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        // Create table
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(250);
+        table.getColumnModel().getColumn(4).setPreferredWidth(100);
+        table.getColumnModel().getColumn(5).setPreferredWidth(200);
+
+        // Scroll pane for table
+        JScrollPane scrollPane = new JScrollPane(table);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Buttons panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton refreshButton = new JButton("Actualizar");
+        JButton editButton = new JButton("Editar");
+        JButton deleteButton = new JButton("Eliminar");
+
+        refreshButton.addActionListener(e -> refreshTable());
+        editButton.addActionListener(e -> editSelectedProveedor());
+        deleteButton.addActionListener(e -> deleteSelectedProveedor());
+
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(deleteButton);
+
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Initial load
+        refreshTable();
     }
 
-    @Override
-    protected void construirFormulario() {
-        // Panel de datos básicos
-        JPanel panelDatosBasicos = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelDatosBasicos.setBorder(BorderFactory.createTitledBorder("Datos Básicos"));
-
-        panelDatosBasicos.add(new JLabel("CIF/NIF:*"));
-        txtCIF = createTextField(12);
-        panelDatosBasicos.add(txtCIF);
-
-        panelDatosBasicos.add(new JLabel("Nombre:*"));
-        txtNombre = createTextField(80);
-        panelDatosBasicos.add(txtNombre);
-
-        // Panel de dirección
-        JPanel panelDireccion = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelDireccion.setBorder(BorderFactory.createTitledBorder("Dirección"));
-
-        panelDireccion.add(new JLabel("Dirección:"));
-        txtDireccion = createTextField(100);
-        panelDireccion.add(txtDireccion);
-
-        panelDireccion.add(new JLabel("Código Postal:"));
-        txtCP = createTextField(5);
-        panelDireccion.add(txtCP);
-
-        panelDireccion.add(new JLabel("Población:"));
-        txtPoblacion = createTextField(50);
-        panelDireccion.add(txtPoblacion);
-
-        panelDireccion.add(new JLabel("Provincia:"));
-        txtProvincia = createTextField(30);
-        panelDireccion.add(txtProvincia);
-
-        panelDireccion.add(new JLabel("País:"));
-        txtPais = createTextField(30);
-        txtPais.setText("España");
-        panelDireccion.add(txtPais);
-
-        // Panel de contacto
-        JPanel panelContacto = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelContacto.setBorder(BorderFactory.createTitledBorder("Contacto"));
-
-        panelContacto.add(new JLabel("Teléfono:"));
-        txtTelefono = createTextField(15);
-        panelContacto.add(txtTelefono);
-
-        panelContacto.add(new JLabel("Email:"));
-        txtEmail = createTextField(80);
-        panelContacto.add(txtEmail);
-
-        panelContacto.add(new JLabel("Web:"));
-        txtWeb = createTextField(80);
-        panelContacto.add(txtWeb);
-
-        panelContacto.add(new JLabel("Persona de Contacto:"));
-        txtPersonaContacto = createTextField(50);
-        panelContacto.add(txtPersonaContacto);
-
-        panelContacto.add(new JLabel("Teléfono de Contacto:"));
-        txtTelefonoContacto = createTextField(15);
-        panelContacto.add(txtTelefonoContacto);
-
-        // Panel de observaciones
-        JPanel panelObservaciones = new JPanel(new BorderLayout());
-        panelObservaciones.setBorder(BorderFactory.createTitledBorder("Observaciones"));
-
-        txtObservaciones = new JTextArea(4, 20);
-        txtObservaciones.setLineWrap(true);
-        txtObservaciones.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(txtObservaciones);
-        panelObservaciones.add(scrollPane, BorderLayout.CENTER);
-
-        // Agregar todos los paneles al panel principal
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(panelDatosBasicos);
-        panel.add(panelDireccion);
-        panel.add(panelContacto);
-        panel.add(panelObservaciones);
-    }
-
-    @Override
-    protected void guardar() {
+    private void refreshTable() {
+        tableModel.setRowCount(0);
         try {
-            // Validaciones básicas
-            String cif = txtCIF.getText().trim();
-            String nombre = txtNombre.getText().trim();
-            
-            if (cif.isEmpty()) {
-                mostrarError("El CIF/NIF es obligatorio", txtCIF);
-                return;
+            List<Proveedores> proveedores = proveedoresService.findAll();
+            for (Proveedores proveedor : proveedores) {
+                Object[] row = {
+                    proveedor.getCodigo(),
+                    proveedor.getNombre(),
+                    proveedor.getCif(),
+                    proveedor.getDireccion(),
+                    proveedor.getTelefono(),
+                    proveedor.getEmail()
+                };
+                tableModel.addRow(row);
             }
-
-            if (nombre.isEmpty()) {
-                mostrarError("El nombre es obligatorio", txtNombre);
-                return;
-            }
-
-            // Crear o actualizar el objeto
-            proveedorActual.setCif(cif);
-            proveedorActual.setNombre(nombre);
-            proveedorActual.setDireccion(txtDireccion.getText().trim());
-            proveedorActual.setCp(txtCP.getText().trim());
-            proveedorActual.setPoblacion(txtPoblacion.getText().trim());
-            proveedorActual.setProvincia(txtProvincia.getText().trim());
-            proveedorActual.setPais(txtPais.getText().trim());
-            proveedorActual.setTelefono(txtTelefono.getText().trim());
-            proveedorActual.setEmail(txtEmail.getText().trim());
-            proveedorActual.setWeb(txtWeb.getText().trim());
-            proveedorActual.setPersonaContacto(txtPersonaContacto.getText().trim());
-            proveedorActual.setTelefonoContacto(txtTelefonoContacto.getText().trim());
-            proveedorActual.setObservaciones(txtObservaciones.getText());
-            
-            // Guardar usando el servicio
-            proveedoresService.saveOrUpdate(proveedorActual);
-            
-            JOptionPane.showMessageDialog(this, 
-                "Proveedor guardado correctamente", 
-                "Éxito", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-            limpiarCampos();
-            proveedorActual = new Proveedores();
-        } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error de validación: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar el proveedor: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar los proveedores: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void mostrarError(String mensaje, JComponent componente) {
-        JOptionPane.showMessageDialog(this, 
-            mensaje, 
-            "Error de validación", 
-            JOptionPane.ERROR_MESSAGE);
-        componente.requestFocus();
+    private void editSelectedProveedor() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            String codigo = (String) tableModel.getValueAt(selectedRow, 0);
+            try {
+                Proveedores proveedor = proveedoresService.findByCodigo(codigo);
+                if (proveedor != null) {
+                    EditProveedorDialog dialog = new EditProveedorDialog(SwingUtilities.getWindowAncestor(this),
+                            proveedor, proveedoresService);
+                    dialog.setVisible(true);
+                    refreshTable();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Proveedor no encontrado",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cargar el proveedor: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un proveedor para editar",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
-    
-    @Override
-    protected void limpiarCampos() {
-        txtCIF.setText("");
-        txtNombre.setText("");
-        txtDireccion.setText("");
-        txtCP.setText("");
-        txtPoblacion.setText("");
-        txtProvincia.setText("");
-        txtPais.setText("España");
-        txtTelefono.setText("");
-        txtEmail.setText("");
-        txtWeb.setText("");
-        txtPersonaContacto.setText("");
-        txtTelefonoContacto.setText("");
-        txtObservaciones.setText("");
-    }
-    
-    public void cargarProveedor(Proveedores proveedor) {
-        if (proveedor != null) {
-            this.proveedorActual = proveedor;
+
+    private void deleteSelectedProveedor() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            String codigo = (String) tableModel.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro de que desea eliminar este proveedor?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION);
             
-            txtCIF.setText(proveedor.getCif());
-            txtNombre.setText(proveedor.getNombre());
-            txtDireccion.setText(proveedor.getDireccion());
-            txtCP.setText(proveedor.getCp());
-            txtPoblacion.setText(proveedor.getPoblacion());
-            txtProvincia.setText(proveedor.getProvincia());
-            txtPais.setText(proveedor.getPais());
-            txtTelefono.setText(proveedor.getTelefono());
-            txtEmail.setText(proveedor.getEmail());
-            txtWeb.setText(proveedor.getWeb());
-            txtPersonaContacto.setText(proveedor.getPersonaContacto());
-            txtTelefonoContacto.setText(proveedor.getTelefonoContacto());
-            txtObservaciones.setText(proveedor.getObservaciones());
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    Proveedores proveedor = proveedoresService.findByCodigo(codigo);
+                    if (proveedor != null) {
+                        proveedoresService.deleteById(proveedor.getId());
+                        refreshTable();
+                        JOptionPane.showMessageDialog(this,
+                                "Proveedor eliminado correctamente",
+                                "Éxito",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error al eliminar el proveedor: " + e.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione un proveedor para eliminar",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 }

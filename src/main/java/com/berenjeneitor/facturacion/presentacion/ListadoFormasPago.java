@@ -4,106 +4,139 @@ import com.berenjeneitor.facturacion.negocio.FormaPagoService;
 import com.berenjeneitor.facturacion.persistencia.entidades.FormaPago;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.List;
 
-public class ListadoFormasPago extends ListadoBase {
+public class ListadoFormasPago extends JPanel {
     private final FormaPagoService formaPagoService;
+    private final MainFrame mainFrame;
+    private final DefaultTableModel tableModel;
+    private final JTable table;
+    private final JTextField txtBuscar;
 
     public ListadoFormasPago(FormaPagoService formaPagoService, MainFrame mainFrame) {
-        super("Listado de Formas de Pago", mainFrame);
         this.formaPagoService = formaPagoService;
-    }
+        this.mainFrame = mainFrame;
 
-    @Override
-    protected void inicializarTabla() {
-        String[] columnas = {"ID", "Tipo", "Observaciones"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Search Panel
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        txtBuscar = new JTextField(20);
+        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar.addActionListener(e -> buscarFormasPago());
+
+        searchPanel.add(new JLabel("Buscar:"));
+        searchPanel.add(txtBuscar);
+        searchPanel.add(btnBuscar);
+
+        // Table
+        String[] columnNames = {"Tipo", "Observaciones"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        tabla = new JTable(modeloTabla);
-        tabla.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tabla.getColumnModel().getColumn(1).setPreferredWidth(200);
-        tabla.getColumnModel().getColumn(2).setPreferredWidth(400);
+
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnNuevo = new JButton("Nuevo");
+        JButton btnEditar = new JButton("Editar");
+        JButton btnEliminar = new JButton("Eliminar");
+
+        btnNuevo.addActionListener(e -> nuevaFormaPago());
+        btnEditar.addActionListener(e -> editarFormaPago());
+        btnEliminar.addActionListener(e -> eliminarFormaPago());
+
+        buttonsPanel.add(btnNuevo);
+        buttonsPanel.add(btnEditar);
+        buttonsPanel.add(btnEliminar);
+
+        // Add components
+        add(searchPanel, BorderLayout.NORTH);
+        add(new JScrollPane(table), BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Load initial data
+        cargarFormasPago();
     }
 
-    @Override
-    protected void cargarDatos() {
-        modeloTabla.setRowCount(0);
-        try {
-            List<FormaPago> formasPago = formaPagoService.findAll();
-            for (FormaPago formaPago : formasPago) {
-                Object[] fila = {
-                    formaPago.getId(),
+    private void cargarFormasPago() {
+        tableModel.setRowCount(0);
+        List<FormaPago> formasPago = formaPagoService.findAll();
+        for (FormaPago formaPago : formasPago) {
+            Object[] row = {
+                formaPago.getTipo(),
+                formaPago.getObservaciones()
+            };
+            tableModel.addRow(row);
+        }
+    }
+
+    private void buscarFormasPago() {
+        String busqueda = txtBuscar.getText().trim().toLowerCase();
+        tableModel.setRowCount(0);
+
+        List<FormaPago> formasPago = formaPagoService.findAll();
+        for (FormaPago formaPago : formasPago) {
+            if (formaPago.getTipo().toLowerCase().contains(busqueda)) {
+                Object[] row = {
                     formaPago.getTipo(),
                     formaPago.getObservaciones()
                 };
-                modeloTabla.addRow(fila);
+                tableModel.addRow(row);
             }
-        } catch (Exception e) {
-            mostrarError("Error al cargar las formas de pago: " + e.getMessage());
         }
     }
 
-    @Override
-    protected void buscar() {
-        String textoBusqueda = txtBusqueda.getText().trim().toLowerCase();
-        modeloTabla.setRowCount(0);
-        try {
-            List<FormaPago> formasPago = formaPagoService.findAll();
-            for (FormaPago formaPago : formasPago) {
-                if (formaPago.getTipo().toLowerCase().contains(textoBusqueda)) {
-                    Object[] fila = {
-                        formaPago.getId(),
-                        formaPago.getTipo(),
-                        formaPago.getObservaciones()
-                    };
-                    modeloTabla.addRow(fila);
-                }
-            }
-        } catch (Exception e) {
-            mostrarError("Error al buscar formas de pago: " + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void nuevo() {
+    private void nuevaFormaPago() {
         mainFrame.showCard("FormasPago");
     }
 
-    @Override
-    protected void editar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            Long id = (Long) tabla.getValueAt(filaSeleccionada, 0);
-            // Aquí iría la lógica para cargar el formulario de edición
-            mainFrame.showCard("FormasPago");
-        } else {
-            mostrarError("Por favor, seleccione una forma de pago para editar");
+    private void editarFormaPago() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Por favor, seleccione una forma de pago para editar",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        String tipo = (String) table.getValueAt(selectedRow, 0);
+        FormaPago formaPago = formaPagoService.findByTipo(tipo);
+        // TODO: Implement edit functionality
+        mainFrame.showCard("FormasPago");
     }
 
-    @Override
-    protected void eliminar() {
-        int filaSeleccionada = tabla.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            Long id = (Long) tabla.getValueAt(filaSeleccionada, 0);
-            String tipo = (String) tabla.getValueAt(filaSeleccionada, 1);
-            
-            if (confirmarEliminacion("la forma de pago '" + tipo + "'")) {
-                try {
-                    formaPagoService.delete(id);
-                    mostrarConfirmacion("Forma de pago eliminada correctamente");
-                    cargarDatos();
-                } catch (Exception e) {
-                    mostrarError("Error al eliminar la forma de pago: " + e.getMessage());
-                }
-            }
-        } else {
-            mostrarError("Por favor, seleccione una forma de pago para eliminar");
+    private void eliminarFormaPago() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this,
+                "Por favor, seleccione una forma de pago para eliminar",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro de que desea eliminar esta forma de pago?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            String tipo = (String) table.getValueAt(selectedRow, 0);
+            FormaPago formaPago = formaPagoService.findByTipo(tipo);
+            formaPagoService.delete(formaPago);
+            cargarFormasPago();
         }
     }
 }

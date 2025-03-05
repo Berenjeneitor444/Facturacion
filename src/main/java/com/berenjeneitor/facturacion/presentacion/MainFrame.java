@@ -1,5 +1,8 @@
 package com.berenjeneitor.facturacion.presentacion;
 
+import com.berenjeneitor.facturacion.negocio.*;
+import com.berenjeneitor.facturacion.persistencia.entidades.*;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -15,7 +18,7 @@ public class MainFrame extends JFrame {
     private final FamiliaArticulosService familiaArticulosService;
     private final TiposIVAService tiposIVAService;
     private final FormaPagoService formaPagoService;
-    private final FacturasService facturasService;
+    private final FacturasClientesService facturasService;
 
     public MainFrame(ArticulosService articulosService,
                    ClientesService clientesService,
@@ -23,7 +26,7 @@ public class MainFrame extends JFrame {
                    FamiliaArticulosService familiaArticulosService,
                    TiposIVAService tiposIVAService,
                    FormaPagoService formaPagoService,
-                   FacturasService facturasService) {
+                   FacturasClientesService facturasService) {
         setTitle("Sistema de Facturación");
         setSize(1024, 768);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,55 +91,6 @@ public class MainFrame extends JFrame {
 
         // Add configuration
         mainPanel.add(new ConfiguracionEmpresa(), "ConfiguracionEmpresa");
-    }
-
-    private JMenuBar createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-
-        // Archivo menu
-        JMenu menuArchivo = new JMenu("Archivo");
-        menuArchivo.add(new JMenuItem("Configuración"));
-        menuArchivo.addSeparator();
-        menuArchivo.add(new JMenuItem("Salir"));
-
-        // Maestros menu
-        JMenu menuMaestros = new JMenu("Maestros");
-        menuMaestros.add(createMenuItem("Clientes", "Clientes"));
-        menuMaestros.add(createMenuItem("Proveedores", "Proveedores"));
-        menuMaestros.add(createMenuItem("Artículos", "Articulos"));
-        menuMaestros.add(createMenuItem("Familias", "Familias"));
-        menuMaestros.add(createMenuItem("Formas de Pago", "FormasPago"));
-
-        // Facturas menu
-        JMenu menuFacturas = new JMenu("Facturas");
-        menuFacturas.add(new JMenuItem("Nueva Factura"));
-        menuFacturas.add(new JMenuItem("Consultar Facturas"));
-        menuFacturas.add(new JMenuItem("Rectificativas"));
-
-        // Informes menu
-        JMenu menuInformes = new JMenu("Informes");
-        menuInformes.add(new JMenuItem("Ventas por Cliente"));
-        menuInformes.add(new JMenuItem("Ventas por Artículo"));
-        menuInformes.add(new JMenuItem("Balance Mensual"));
-
-        // Ayuda menu
-        JMenu menuAyuda = new JMenu("Ayuda");
-        menuAyuda.add(new JMenuItem("Manual de Usuario"));
-        menuAyuda.add(new JMenuItem("Acerca de"));
-
-        menuBar.add(menuArchivo);
-        menuBar.add(menuMaestros);
-        menuBar.add(menuFacturas);
-        menuBar.add(menuInformes);
-        menuBar.add(menuAyuda);
-
-        return menuBar;
-    }
-
-    private JMenuItem createMenuItem(String text, String cardName) {
-        JMenuItem menuItem = new JMenuItem(text);
-        menuItem.addActionListener(e -> showCard(cardName));
-        return menuItem;
     }
 
     public void showCard(String cardName) {

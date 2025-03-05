@@ -1,230 +1,191 @@
 package com.berenjeneitor.facturacion.presentacion;
 
-import com.berenjeneitor.facturacion.negocio.FacturasService;
-import com.berenjeneitor.facturacion.persistencia.entidades.Facturas;
+import com.berenjeneitor.facturacion.negocio.FacturasClientesService;
+import com.berenjeneitor.facturacion.persistencia.entidades.FacturasClientes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.text.NumberFormat;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 
 public class ListadoFacturas extends JPanel {
-    private JTable tablaFacturas;
-    private DefaultTableModel modeloTabla;
-    private JTextField txtBusqueda;
-    private JButton btnBuscar, btnNueva, btnEditar, btnEliminar, btnImprimir;
-    
-    private final FacturasService facturasService;
-    private MainFrame mainFrame;
-    private NumberFormat currencyFormat;
-    private DateTimeFormatter dateFormatter;
+    private final FacturasClientesService facturasService;
+    private final MainFrame father;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
+    private final SimpleDateFormat dateFormat;
 
-    public ListadoFacturas(FacturasService facturasService, MainFrame mainFrame) {
+    public ListadoFacturas(FacturasClientesService facturasService, MainFrame father) {
         this.facturasService = facturasService;
-        this.mainFrame = mainFrame;
-        this.currencyFormat = NumberFormat.getCurrencyInstance(new Locale("es", "ES"));
-        this.dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Panel de título
-        JPanel panelTitulo = new JPanel();
-        JLabel lblTitulo = new JLabel("Listado de Facturas");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
-        panelTitulo.add(lblTitulo);
-        add(panelTitulo, BorderLayout.NORTH);
-        
-        // Panel de búsqueda
-        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelBusqueda.add(new JLabel("Buscar:"));
-        txtBusqueda = new JTextField(30);
-        panelBusqueda.add(txtBusqueda);
-        btnBuscar = new JButton("Buscar");
-        panelBusqueda.add(btnBuscar);
-        add(panelBusqueda, BorderLayout.SOUTH);
-        
-        // Panel de tabla
-        String[] columnas = {"ID", "Número", "Fecha", "Cliente", "Total", "Estado"};
-        modeloTabla = new DefaultTableModel(columnas, 0) {
+        this.father = father;
+        this.dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        setLayout(new BorderLayout());
+
+        // Create table model
+        String[] columnNames = {"ID", "Número", "Fecha", "Cliente", "Base Imponible", "IVA", "Total", "Cobrada"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-        };
-        
-        tablaFacturas = new JTable(modeloTabla);
-        tablaFacturas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablaFacturas.getTableHeader().setReorderingAllowed(false);
-        
-        // Ocultar la columna ID
-        tablaFacturas.getColumnModel().getColumn(0).setMinWidth(0);
-        tablaFacturas.getColumnModel().getColumn(0).setMaxWidth(0);
-        tablaFacturas.getColumnModel().getColumn(0).setWidth(0);
-        
-        JScrollPane scrollPane = new JScrollPane(tablaFacturas);
-        add(scrollPane, BorderLayout.CENTER);
-        
-        // Panel de botones
-        JPanel panelBotones = new JPanel(new GridLayout(5, 1, 5, 5));
-        btnNueva = new JButton("Nueva");
-        btnEditar = new JButton("Editar");
-        btnEliminar = new JButton("Eliminar");
-        btnImprimir = new JButton("Imprimir");
-        
-        panelBotones.add(btnNueva);
-        panelBotones.add(btnEditar);
-        panelBotones.add(btnEliminar);
-        panelBotones.add(btnImprimir);
-        add(panelBotones, BorderLayout.EAST);
-        
-        // Configurar eventos
-        btnBuscar.addActionListener(e -> buscarFacturas());
-        btnNueva.addActionListener(e -> nuevaFactura());
-        btnEditar.addActionListener(e -> editarFactura());
-        btnEliminar.addActionListener(e -> eliminarFactura());
-        btnImprimir.addActionListener(e -> imprimirFactura());
-        
-        tablaFacturas.addMouseListener(new MouseAdapter() {
+
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    editarFactura();
-                }
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 7) return Boolean.class;
+                return Object.class;
             }
-        });
-        
-        // Cargar datos iniciales
-        cargarFacturas();
+        };
+
+        // Create table
+        table = new JTable(tableModel);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(80);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(200);
+        table.getColumnModel().getColumn(4).setPreferredWidth(100);
+        table.getColumnModel().getColumn(5).setPreferredWidth(100);
+        table.getColumnModel().getColumn(6).setPreferredWidth(100);
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);
+
+        // Scroll pane for table
+        JScrollPane scrollPane = new JScrollPane(table);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Buttons panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton refreshButton = new JButton("Actualizar");
+        JButton viewButton = new JButton("Ver Detalle");
+        JButton deleteButton = new JButton("Eliminar");
+        JButton markAsPaidButton = new JButton("Marcar como Cobrada");
+
+        refreshButton.addActionListener(e -> refreshTable());
+        viewButton.addActionListener(e -> viewSelectedFactura());
+        deleteButton.addActionListener(e -> deleteSelectedFactura());
+        markAsPaidButton.addActionListener(e -> markSelectedFacturaAsPaid());
+
+        buttonsPanel.add(refreshButton);
+        buttonsPanel.add(viewButton);
+        buttonsPanel.add(deleteButton);
+        buttonsPanel.add(markAsPaidButton);
+
+        add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Initial load
+        refreshTable();
     }
-    
-    private void cargarFacturas() {
-        // Limpiar tabla
-        while (modeloTabla.getRowCount() > 0) {
-            modeloTabla.removeRow(0);
-        }
-        
-        // Obtener facturas y cargar en tabla
-        List<Facturas> facturas = facturasService.findAll();
-        for (Facturas factura : facturas) {
-            Object[] fila = {
-                factura.getId(),
-                factura.getNumero(),
-                factura.getFecha().format(dateFormatter),
-                factura.getCliente().getNombre(),
-                currencyFormat.format(factura.getTotal()),
-                factura.getEstado()
-            };
-            modeloTabla.addRow(fila);
-        }
-    }
-    
-    private void buscarFacturas() {
-        String termino = txtBusqueda.getText().trim();
-        if (termino.isEmpty()) {
-            cargarFacturas();
-            return;
-        }
-        
-        // Limpiar tabla
-        while (modeloTabla.getRowCount() > 0) {
-            modeloTabla.removeRow(0);
-        }
-        
-        // Buscar facturas por término
-        List<Facturas> facturas = facturasService.buscarPorTermino(termino);
-        for (Facturas factura : facturas) {
-            Object[] fila = {
-                factura.getId(),
-                factura.getNumero(),
-                factura.getFecha().format(dateFormatter),
-                factura.getCliente().getNombre(),
-                currencyFormat.format(factura.getTotal()),
-                factura.getEstado()
-            };
-            modeloTabla.addRow(fila);
-        }
-    }
-    
-    private void nuevaFactura() {
-        mainFrame.showCard("Facturas");
-    }
-    
-    private void editarFactura() {
-        int filaSeleccionada = tablaFacturas.getSelectedRow();
-        if (filaSeleccionada == -1) {
+
+    private void refreshTable() {
+        tableModel.setRowCount(0);
+        try {
+            List<FacturasClientes> facturas = facturasService.findAll();
+            for (FacturasClientes factura : facturas) {
+                Object[] row = {
+                    factura.getId(),
+                    factura.getNumero(),
+                    dateFormat.format(factura.getFecha()),
+                    factura.getCliente().getNombre(),
+                    factura.getBaseImponible(),
+                    factura.getIva(),
+                    factura.getTotal(),
+                    factura.getCobrada()
+                };
+                tableModel.addRow(row);
+            }
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                "Por favor, seleccione una factura para editar",
-                "Selección requerida",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        Integer idFactura = (Integer) modeloTabla.getValueAt(filaSeleccionada, 0);
-        // Aquí iría la lógica para cargar la factura en el formulario
-        mainFrame.showCard("Facturas");
-        // Y luego cargar los datos de la factura en el formulario
-    }
-    
-    private void eliminarFactura() {
-        int filaSeleccionada = tablaFacturas.getSelectedRow();
-        if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this,
-                "Por favor, seleccione una factura para eliminar",
-                "Selección requerida",
-                JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        Integer idFactura = (Integer) modeloTabla.getValueAt(filaSeleccionada, 0);
-        String numeroFactura = (String) modeloTabla.getValueAt(filaSeleccionada, 1);
-        
-        int confirmacion = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de que desea eliminar la factura '" + numeroFactura + "'?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-            
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            try {
-                facturasService.findById(idFactura).ifPresent(factura -> {
-                    facturasService.delete(factura);
-                    cargarFacturas();
-                    JOptionPane.showMessageDialog(this,
-                        "Factura eliminada correctamente",
-                        "Éxito",
-                        JOptionPane.INFORMATION_MESSAGE);
-                });
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                    "Error al eliminar la factura: " + e.getMessage(),
+                    "Error al cargar las facturas: " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
-            }
         }
     }
-    
-    private void imprimirFactura() {
-        int filaSeleccionada = tablaFacturas.getSelectedRow();
-        if (filaSeleccionada == -1) {
+
+    private void viewSelectedFactura() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer id = (Integer) tableModel.getValueAt(selectedRow, 0);
+            try {
+                Optional<FacturasClientes> factura = facturasService.findById(id);
+                if (factura.isPresent()) {
+                    // Show view dialog
+                    ViewFacturaDialog dialog = new ViewFacturaDialog(father, factura);
+                    dialog.setVisible(true);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al cargar la factura: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
             JOptionPane.showMessageDialog(this,
-                "Por favor, seleccione una factura para imprimir",
-                "Selección requerida",
-                JOptionPane.WARNING_MESSAGE);
-            return;
+                    "Por favor, seleccione una factura para ver",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
         }
-        
-        Integer idFactura = (Integer) modeloTabla.getValueAt(filaSeleccionada, 0);
-        
-        // Aquí iría la lógica para imprimir la factura
-        JOptionPane.showMessageDialog(this,
-            "Funcionalidad de impresión no implementada",
-            "Información",
-            JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void deleteSelectedFactura() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer id = (Integer) tableModel.getValueAt(selectedRow, 0);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro de que desea eliminar esta factura?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                try {
+                    facturasService.deleteById(id);
+                    refreshTable();
+                    JOptionPane.showMessageDialog(this,
+                            "Factura eliminada correctamente",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error al eliminar la factura: " + e.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione una factura para eliminar",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void markSelectedFacturaAsPaid() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            Integer id = (Integer) tableModel.getValueAt(selectedRow, 0);
+            try {
+                Optional<FacturasClientes> factura = facturasService.findById(id);
+                if (factura.isPresent()) {
+                    FacturasClientes facturaObject = factura.get();
+                    facturaObject.setCobrada(true);
+                    facturasService.saveOrUpdate(facturaObject);
+                    refreshTable();
+                    JOptionPane.showMessageDialog(this,
+                            "Factura marcada como cobrada correctamente",
+                            "Éxito",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al actualizar la factura: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Por favor, seleccione una factura para marcar como cobrada",
+                    "Aviso",
+                    JOptionPane.WARNING_MESSAGE);
+        }
     }
 }

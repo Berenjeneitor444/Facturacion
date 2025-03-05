@@ -1,206 +1,171 @@
 package com.berenjeneitor.facturacion.presentacion;
 
 import com.berenjeneitor.facturacion.negocio.ClientesService;
-import com.berenjeneitor.facturacion.negocio.ValidationException;
 import com.berenjeneitor.facturacion.persistencia.entidades.Clientes;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.math.BigDecimal;
 
-public class FormularioClientes extends FormularioBase {
-    private JTextField txtCIF, txtNombre, txtDireccion, txtCP;
-    private JTextField txtPoblacion, txtProvincia, txtPais;
-    private JTextField txtTelefono, txtEmail, txtWeb;
-    private JTextField txtPersonaContacto, txtTelefonoContacto;
-    private JTextArea txtObservaciones;
-    
+public class FormularioClientes extends JPanel {
     private final ClientesService clientesService;
-    private Clientes clienteActual;
+
+    private JTextField txtCif;
+    private JTextField txtNombre;
+    private JTextField txtDireccion;
+    private JTextField txtCP;
+    private JTextField txtPoblacion;
+    private JTextField txtProvincia;
+    private JTextField txtPais;
+    private JTextField txtTelefono;
+    private JTextField txtEmail;
+    private JTextField txtIBAN;
+    private JTextField txtRiesgo;
+    private JTextField txtDescuento;
+    private JTextArea txtObservaciones;
 
     public FormularioClientes(ClientesService clientesService) {
-        super("Formulario de Cliente");
         this.clientesService = clientesService;
-        clienteActual = new Clientes();
+
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Form Panel
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Initialize components
+        initializeComponents();
+
+        // Add components to form
+        int row = 0;
+
+        // Personal Information
+        addFormField(formPanel, "CIF:", txtCif, gbc, row++);
+        addFormField(formPanel, "Nombre:", txtNombre, gbc, row++);
+        addFormField(formPanel, "Teléfono:", txtTelefono, gbc, row++);
+        addFormField(formPanel, "Email:", txtEmail, gbc, row++);
+
+        // Address Information
+        addFormField(formPanel, "Dirección:", txtDireccion, gbc, row++);
+        addFormField(formPanel, "CP:", txtCP, gbc, row++);
+        addFormField(formPanel, "Población:", txtPoblacion, gbc, row++);
+        addFormField(formPanel, "Provincia:", txtProvincia, gbc, row++);
+        addFormField(formPanel, "País:", txtPais, gbc, row++);
+
+        // Financial Information
+        addFormField(formPanel, "IBAN:", txtIBAN, gbc, row++);
+        addFormField(formPanel, "Riesgo:", txtRiesgo, gbc, row++);
+        addFormField(formPanel, "Descuento (%):", txtDescuento, gbc, row++);
+
+        // Observations
+        gbc.gridx = 0;
+        gbc.gridy = row++;
+        formPanel.add(new JLabel("Observaciones:"), gbc);
+        gbc.gridx = 1;
+        gbc.gridheight = 2;
+        formPanel.add(new JScrollPane(txtObservaciones), gbc);
+
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton btnGuardar = new JButton("Guardar");
+        JButton btnLimpiar = new JButton("Limpiar");
+
+        btnGuardar.addActionListener(e -> guardarCliente());
+        btnLimpiar.addActionListener(e -> limpiarFormulario());
+
+        buttonsPanel.add(btnGuardar);
+        buttonsPanel.add(btnLimpiar);
+
+        // Add panels to main panel
+        add(new JScrollPane(formPanel), BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.SOUTH);
     }
 
-    @Override
-    protected void construirFormulario() {
-        // Panel de datos básicos
-        JPanel panelDatosBasicos = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelDatosBasicos.setBorder(BorderFactory.createTitledBorder("Datos Básicos"));
-
-        panelDatosBasicos.add(new JLabel("CIF/NIF:*"));
-        txtCIF = createTextField(12);
-        panelDatosBasicos.add(txtCIF);
-
-        panelDatosBasicos.add(new JLabel("Nombre:*"));
-        txtNombre = createTextField(80);
-        panelDatosBasicos.add(txtNombre);
-
-        // Panel de dirección
-        JPanel panelDireccion = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelDireccion.setBorder(BorderFactory.createTitledBorder("Dirección"));
-
-        panelDireccion.add(new JLabel("Dirección:"));
-        txtDireccion = createTextField(100);
-        panelDireccion.add(txtDireccion);
-
-        panelDireccion.add(new JLabel("Código Postal:"));
-        txtCP = createTextField(5);
-        panelDireccion.add(txtCP);
-
-        panelDireccion.add(new JLabel("Población:"));
-        txtPoblacion = createTextField(50);
-        panelDireccion.add(txtPoblacion);
-
-        panelDireccion.add(new JLabel("Provincia:"));
-        txtProvincia = createTextField(30);
-        panelDireccion.add(txtProvincia);
-
-        panelDireccion.add(new JLabel("País:"));
-        txtPais = createTextField(30);
-        txtPais.setText("España");
-        panelDireccion.add(txtPais);
-
-        // Panel de contacto
-        JPanel panelContacto = new JPanel(new GridLayout(0, 2, 5, 5));
-        panelContacto.setBorder(BorderFactory.createTitledBorder("Contacto"));
-
-        panelContacto.add(new JLabel("Teléfono:"));
-        txtTelefono = createTextField(15);
-        panelContacto.add(txtTelefono);
-
-        panelContacto.add(new JLabel("Email:"));
-        txtEmail = createTextField(80);
-        panelContacto.add(txtEmail);
-
-        panelContacto.add(new JLabel("Web:"));
-        txtWeb = createTextField(80);
-        panelContacto.add(txtWeb);
-
-        panelContacto.add(new JLabel("Persona de Contacto:"));
-        txtPersonaContacto = createTextField(50);
-        panelContacto.add(txtPersonaContacto);
-
-        panelContacto.add(new JLabel("Teléfono de Contacto:"));
-        txtTelefonoContacto = createTextField(15);
-        panelContacto.add(txtTelefonoContacto);
-
-        // Panel de observaciones
-        JPanel panelObservaciones = new JPanel(new BorderLayout());
-        panelObservaciones.setBorder(BorderFactory.createTitledBorder("Observaciones"));
-
+    private void initializeComponents() {
+        txtCif = new JTextField(20);
+        txtNombre = new JTextField(20);
+        txtDireccion = new JTextField(20);
+        txtCP = new JTextField(10);
+        txtPoblacion = new JTextField(20);
+        txtProvincia = new JTextField(20);
+        txtPais = new JTextField(20);
+        txtTelefono = new JTextField(16);
+        txtEmail = new JTextField(20);
+        txtIBAN = new JTextField(20);
+        txtRiesgo = new JTextField(10);
+        txtDescuento = new JTextField(10);
         txtObservaciones = new JTextArea(4, 20);
         txtObservaciones.setLineWrap(true);
         txtObservaciones.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(txtObservaciones);
-        panelObservaciones.add(scrollPane, BorderLayout.CENTER);
-
-        // Agregar todos los paneles al panel principal
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(panelDatosBasicos);
-        panel.add(panelDireccion);
-        panel.add(panelContacto);
-        panel.add(panelObservaciones);
     }
 
-    @Override
-    protected void guardar() {
+    private void addFormField(JPanel panel, String label, JComponent field,
+                            GridBagConstraints gbc, int row) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridheight = 1;
+        panel.add(new JLabel(label), gbc);
+        gbc.gridx = 1;
+        panel.add(field, gbc);
+    }
+
+    private void guardarCliente() {
         try {
-            // Validaciones básicas
-            String cif = txtCIF.getText().trim();
-            String nombre = txtNombre.getText().trim();
+            Clientes cliente = new Clientes();
+            cliente.setCif(txtCif.getText());
+            cliente.setNombre(txtNombre.getText());
+            cliente.setDireccion(txtDireccion.getText());
+            cliente.setCp(txtCP.getText());
+            cliente.setPoblacion(txtPoblacion.getText());
+            cliente.setProvincia(txtProvincia.getText());
+            cliente.setPais(txtPais.getText());
+            cliente.setTelefono(txtTelefono.getText());
+            cliente.setEmail(txtEmail.getText());
+            cliente.setIban(txtIBAN.getText());
             
-            if (cif.isEmpty()) {
-                mostrarError("El CIF/NIF es obligatorio", txtCIF);
-                return;
+            String riesgoText = txtRiesgo.getText().trim();
+            if (!riesgoText.isEmpty()) {
+                cliente.setRiesgo(new BigDecimal(riesgoText));
             }
-
-            if (nombre.isEmpty()) {
-                mostrarError("El nombre es obligatorio", txtNombre);
-                return;
+            
+            String descuentoText = txtDescuento.getText().trim();
+            if (!descuentoText.isEmpty()) {
+                cliente.setDescuento(new BigDecimal(descuentoText));
             }
+            
+            cliente.setObservaciones(txtObservaciones.getText());
 
-            // Crear o actualizar el objeto
-            clienteActual.setCif(cif);
-            clienteActual.setNombre(nombre);
-            clienteActual.setDireccion(txtDireccion.getText().trim());
-            clienteActual.setCp(txtCP.getText().trim());
-            clienteActual.setPoblacion(txtPoblacion.getText().trim());
-            clienteActual.setProvincia(txtProvincia.getText().trim());
-            clienteActual.setPais(txtPais.getText().trim());
-            clienteActual.setTelefono(txtTelefono.getText().trim());
-            clienteActual.setEmail(txtEmail.getText().trim());
-            clienteActual.setWeb(txtWeb.getText().trim());
-            clienteActual.setPersonaContacto(txtPersonaContacto.getText().trim());
-            clienteActual.setTelefonoContacto(txtTelefonoContacto.getText().trim());
-            clienteActual.setObservaciones(txtObservaciones.getText());
-            
-            // Guardar usando el servicio
-            clientesService.saveOrUpdate(clienteActual);
-            
-            JOptionPane.showMessageDialog(this, 
-                "Cliente guardado correctamente", 
-                "Éxito", 
-                JOptionPane.INFORMATION_MESSAGE);
-            
-            limpiarCampos();
-            clienteActual = new Clientes();
-        } catch (ValidationException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error de validación: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            clientesService.saveOrUpdate(cliente);
+            JOptionPane.showMessageDialog(this,
+                    "Cliente guardado correctamente",
+                    "Éxito",
+                    JOptionPane.INFORMATION_MESSAGE);
+            limpiarFormulario();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar el cliente: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error al guardar el cliente: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void mostrarError(String mensaje, JComponent componente) {
-        JOptionPane.showMessageDialog(this, 
-            mensaje, 
-            "Error de validación", 
-            JOptionPane.ERROR_MESSAGE);
-        componente.requestFocus();
-    }
-    
-    @Override
-    protected void limpiarCampos() {
-        txtCIF.setText("");
+    private void limpiarFormulario() {
+        txtCif.setText("");
         txtNombre.setText("");
         txtDireccion.setText("");
         txtCP.setText("");
         txtPoblacion.setText("");
         txtProvincia.setText("");
-        txtPais.setText("España");
+        txtPais.setText("");
         txtTelefono.setText("");
         txtEmail.setText("");
-        txtWeb.setText("");
-        txtPersonaContacto.setText("");
-        txtTelefonoContacto.setText("");
+        txtIBAN.setText("");
+        txtRiesgo.setText("");
+        txtDescuento.setText("");
         txtObservaciones.setText("");
-    }
-    
-    public void cargarCliente(Clientes cliente) {
-        if (cliente != null) {
-            this.clienteActual = cliente;
-            
-            txtCIF.setText(cliente.getCif());
-            txtNombre.setText(cliente.getNombre());
-            txtDireccion.setText(cliente.getDireccion());
-            txtCP.setText(cliente.getCp());
-            txtPoblacion.setText(cliente.getPoblacion());
-            txtProvincia.setText(cliente.getProvincia());
-            txtPais.setText(cliente.getPais());
-            txtTelefono.setText(cliente.getTelefono());
-            txtEmail.setText(cliente.getEmail());
-            txtWeb.setText(cliente.getWeb());
-            txtPersonaContacto.setText(cliente.getPersonaContacto());
-            txtTelefonoContacto.setText(cliente.getTelefonoContacto());
-            txtObservaciones.setText(cliente.getObservaciones());
-        }
     }
 }

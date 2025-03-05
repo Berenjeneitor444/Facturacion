@@ -136,7 +136,7 @@ public class MyMenuBar extends JMenuBar implements ActionListener {
         manualUsuario.addActionListener(this);
         acercaDe.addActionListener(this);
     }
-    // codigo para redirigir
+
     @Override
     public void actionPerformed(ActionEvent e) {
         JMenuItem source = (JMenuItem) e.getSource();
